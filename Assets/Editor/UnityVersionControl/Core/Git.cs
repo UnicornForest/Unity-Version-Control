@@ -87,6 +87,34 @@ namespace ThinksquirrelSoftware.UnityVersionControl.Core
 			}
 		}
 		
+		/// <summary>
+		/// Returns the location of the project's repository.
+		/// </summary>
+		public static string RepositoryLocation()
+		{
+			if (!ProjectHasRepository())
+				return null;
+			
+			var gitProcess = RunGit("rev-parse --show-toplevel", EmptyHandler);
+			bool exited = gitProcess.WaitForExit(5000);
+			
+			if (!exited)
+			{
+				// TODO: This needs to fail and throw an exception.
+				return null;
+			}
+			
+			if (gitProcess.ExitCode == 0)
+			{
+				return gitProcess.StandardOutput.ReadToEnd();	
+			}
+			else
+			{
+				// TODO: This needs to fail and throw an exception.
+				return null;
+			}
+		}
+		
 		private static void EmptyHandler(object sender, System.EventArgs e)
 		{
 			// Empty process handler. Used when waiting for a process to exit, in order to still get standard output and error streams.

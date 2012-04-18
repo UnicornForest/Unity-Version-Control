@@ -33,28 +33,30 @@ namespace ThinksquirrelSoftware.UnityVersionControl.Tests
 {
 	public class CoreTests
 	{	
-		[MenuItem ("Version Control/Debug/Core Tests/Test 1")]
+		[MenuItem ("Version Control/Debug/Core Tests/Init")]
 	    static void Test1()
 		{
 			Git.RunGit("init", OnProcessExit);
 		}
 		
-		[MenuItem ("Version Control/Debug/Core Tests/Test 2")]
+		[MenuItem ("Version Control/Debug/Core Tests/Status")]
 	    static void Test2()
 		{
 			Git.RunGit("status", OnProcessExit);
 		}
 		
-		[MenuItem ("Version Control/Debug/Core Tests/Test 3")]
+		[MenuItem ("Version Control/Debug/Core Tests/Bad Command")]
 	    static void Test3()
 		{
 			Git.RunGit("notarealcommand", OnProcessExit);
 		}
 		
-		[MenuItem ("Version Control/Debug/Core Tests/Test 4")]
+		[MenuItem ("Version Control/Debug/Core Tests/Repository Location")]
 	    static void Test4()
 		{
-			Debug.Log(Git.ProjectHasRepository());
+			string message = Git.RepositoryLocation();
+			
+			EditorUtility.DisplayDialog("Repository Location", message, "Ok", "Cancel");
 		}
 		
 		static void OnProcessExit(object sender, System.EventArgs e)
