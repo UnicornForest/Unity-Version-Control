@@ -32,35 +32,44 @@ using ThinksquirrelSoftware.UnityVersionControl.Core;
 namespace ThinksquirrelSoftware.UnityVersionControl.Tests
 {
 	public class CoreTests
-	{
-		private static System.Diagnostics.Process gitProcess;
-		
+	{	
 		[MenuItem ("Version Control/Debug/Core Tests/Test 1")]
 	    static void Test1()
 		{
-			gitProcess = Git.RunGit("init", OnProcessExit);
+			Git.RunGit("init", OnProcessExit);
 		}
 		
 		[MenuItem ("Version Control/Debug/Core Tests/Test 2")]
 	    static void Test2()
 		{
-			gitProcess = Git.RunGit("status", OnProcessExit);
+			Git.RunGit("status", OnProcessExit);
 		}
 		
 		[MenuItem ("Version Control/Debug/Core Tests/Test 3")]
 	    static void Test3()
 		{
-			gitProcess = Git.RunGit("notarealcommand", OnProcessExit);
+			Git.RunGit("notarealcommand", OnProcessExit);
+		}
+		
+		[MenuItem ("Version Control/Debug/Core Tests/Test 4")]
+	    static void Test4()
+		{
+			Debug.Log(Git.ProjectHasRepository());
 		}
 		
 		static void OnProcessExit(object sender, System.EventArgs e)
 		{
+			var gitProcess = sender as System.Diagnostics.Process;
+			
 			string output = gitProcess.StandardOutput.ReadToEnd();
+			
 			if (!string.IsNullOrEmpty(output))
 			{
 				Debug.Log(output);
 			}
+			
 			string error = gitProcess.StandardError.ReadToEnd();
+			
 			if (!string.IsNullOrEmpty(error))
 			{
 				Debug.LogError(error);

@@ -31,9 +31,12 @@ namespace ThinksquirrelSoftware.UnityVersionControl.Core
 	public static class Git
 	{
 		/// <summary>
-		/// Runs git with the specified arguments.
+		/// Runs git asynchronously with the specified arguments.
 		/// </summary>
-		public static System.Diagnostics.Process RunGit(string args, System.EventHandler exitEventHandler)
+		/// <remarks>
+		/// Returns the process (with output and error streams redirected) to be handled on an exit event.
+		/// </remarks>
+		public static Process RunGit(string args, System.EventHandler exitEventHandler)
 		{
 			var process = new System.Diagnostics.Process();
 			
@@ -54,6 +57,39 @@ namespace ThinksquirrelSoftware.UnityVersionControl.Core
 			process.Start();
 			
 			return process;
+		}
+		
+		/// <summary>
+		/// Checks to see if the current project has a repository.
+		/// </summary>
+		/// <returns>
+		/// True if the project has a git repository, otherwise false.
+		/// </returns>
+		public static bool ProjectHasRepository()
+		{
+			var gitProcess = RunGit("rev-parse --is-inside-work-tree", EmptyHandler);
+			bool exited = gitProcess.WaitForExit(5000);
+			
+			if (!exited)
+			{
+				// TODO: This needs to fail and throw an exception.
+				return false;
+			}
+			
+			if (gitProcess.ExitCode == 0)
+			{
+				string output = gitProcess.StandardOutput.ReadToEnd();
+				return output.Contains("true");
+			}
+			else
+			{
+				return false;
+			}
+		}
+		
+		private static void EmptyHandler(object sender, System.EventArgs e)
+		{
+			// Empty process handler. Used when waiting for a process to exit, in order to still get standard output and error streams.
 		}
 	}
 }
