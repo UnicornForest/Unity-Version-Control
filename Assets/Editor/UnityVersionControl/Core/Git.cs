@@ -22,6 +22,7 @@
 //    You should have received a copy of the GNU General Public License
 //    along with Unity Version Control.  If not, see <http://www.gnu.org/licenses/>.
 //
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Text;
 
@@ -117,6 +118,147 @@ namespace ThinksquirrelSoftware.UnityVersionControl.Core
 		private static void EmptyHandler(object sender, System.EventArgs e)
 		{
 			// Empty process handler. Used when waiting for a process to exit, in order to still get standard output and error streams.
+		}
+	
+		internal static VCFile[] ParseFiles(string input)
+		{
+			// Split the input.
+			string[] inputSplit = input.Split('\0');
+			
+			List<VCFile> files = new List<VCFile>();
+			
+			for(int i = 0; i < inputSplit.Length; i++)
+			{
+				if (string.IsNullOrEmpty(inputSplit[i]))
+					continue;
+					
+				// Create the file
+				var file = new VCFile();
+				
+				// Add it to the list
+				files.Add(file);
+				
+				bool increase = false;
+				
+				#region parse - staged
+				switch(inputSplit[i][0])
+				{
+				case ' ':
+					file.fileState1 = FileState.Unmodified;
+					file.path1 = inputSplit[i].Substring(3);
+					break;
+				case 'M':
+					file.fileState1 = FileState.Modified;
+					file.path1 = inputSplit[i].Substring(3);
+					break;
+				case 'A':
+					file.fileState1 = FileState.Added;
+					file.path1 = inputSplit[i].Substring(3);
+					break;
+				case 'D':
+					file.fileState1 = FileState.Deleted;
+					file.path1 = inputSplit[i].Substring(3);
+					break;
+				case 'R':
+					file.fileState1 = FileState.Renamed;
+					file.path1 = inputSplit[i+1];
+					file.path2 = inputSplit[i].Substring(3);
+					increase = true;
+					break;
+				case 'C':
+					file.fileState1 = FileState.Copied;
+					file.path1 = inputSplit[i+1];
+					file.path2 = inputSplit[i].Substring(3);
+					i++;
+					break;
+				case 'U':
+					file.fileState1 = FileState.Unmerged;
+					file.path1 = inputSplit[i].Substring(3);
+					break;
+				case '?':
+					file.fileState1 = FileState.Untracked;
+					file.path1 = inputSplit[i].Substring(3);
+					break;
+				case '!':
+					file.fileState1 = FileState.Ignored;
+					file.path1 = inputSplit[i].Substring(3);
+					break;
+				}
+				#endregion
+				#region parse - index
+				switch(inputSplit[i][1])
+				{
+				case ' ':
+					file.fileState2 = FileState.Unmodified;
+					break;
+				case 'M':
+					file.fileState2 = FileState.Modified;
+					break;
+				case 'A':
+					file.fileState2 = FileState.Added;
+					break;
+				case 'D':
+					file.fileState2 = FileState.Deleted;
+					break;
+				case 'R':
+					file.fileState2 = FileState.Renamed;
+					break;
+				case 'C':
+					file.fileState2 = FileState.Copied;
+					break;
+				case 'U':
+					file.fileState2 = FileState.Unmerged;
+					break;
+				case '?':
+					file.fileState2 = FileState.Untracked;
+					break;
+				case '!':
+					file.fileState2 = FileState.Ignored;
+					break;
+				}
+				#endregion
+				
+				#region parse - file name
+				string sep = System.IO.Path.DirectorySeparatorChar.ToString();
+				if (file.path1.Contains(sep))
+				{
+					if (file.path1.LastIndexOf(sep) != file.path1.Length - 1)
+					{
+						file.name1 = file.path1.Substring(file.path1.LastIndexOf(sep) + 1);
+					}
+					else
+					{
+						file.name1 = file.path1;
+					}
+				}
+				else
+				{
+					file.name1 = file.path1;
+				}
+				if (file.path2.Contains(sep))
+				{
+					if (file.path2.LastIndexOf(sep) != file.path2.Length - 1)
+					{
+						file.name2 = file.path2.Substring(file.path2.LastIndexOf(sep) + 1);
+					}
+					else
+					{
+						file.name2 = file.path2;
+					}
+				}
+				else
+				{
+					file.name2 = file.path2;
+				}
+				#endregion
+				
+				// Increase by 1 if we renamed or copied
+				if (increase)
+					i++;
+				
+			}
+			
+			return files.ToArray();
 		}
 	}
 }

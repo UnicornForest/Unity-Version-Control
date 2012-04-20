@@ -44,8 +44,14 @@
 	</Reference>
   </ItemGroup>
   <ItemGroup>
+     <Compile Include="Assets\Editor\UnityVersionControl\Core\CommandLine.cs" />
      <Compile Include="Assets\Editor\UnityVersionControl\Core\Git.cs" />
+     <Compile Include="Assets\Editor\UnityVersionControl\Core\Hg.cs" />
+     <Compile Include="Assets\Editor\UnityVersionControl\Core\VCFile.cs" />
+     <Compile Include="Assets\Editor\UnityVersionControl\Core\VersionControl.cs" />
+     <Compile Include="Assets\Editor\UnityVersionControl\EditorWindows\UVCBrowser.cs" />
      <Compile Include="Assets\Editor\UnityVersionControl\Tests\CoreTests.cs" />
+     <Compile Include="Assets\Editor\UnityVersionControl\UserInterface\BrowserUtility.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
