@@ -36,7 +36,6 @@ namespace ThinksquirrelSoftware.UnityVersionControl.UserInterface
 	/// <remarks>
 	/// This seperates interface functionality from design/display.
 	/// </remarks>
-	/// TODO: (Git) Files that are staged and then modified show up twice - these need to only show up in the staged area
 	public static class BrowserUtility
 	{	
 		#region Member fields
@@ -526,7 +525,7 @@ namespace ThinksquirrelSoftware.UnityVersionControl.UserInterface
 					// Check for duplicate
 					if (!stagedFiles.ContainsKey(file.path1 + file.path2))
 					{
-						// Add value
+						// Add file
 						stagedFiles.Add(file.path1 + file.path2, file);
 					}
 				}
@@ -537,8 +536,17 @@ namespace ThinksquirrelSoftware.UnityVersionControl.UserInterface
 					// Check for duplicate
 					if (!workingTree.ContainsKey(file.path1 + file.path2))
 					{
-						// Add value
-						workingTree.Add(file.path1 + file.path2, file);
+						// Check for duplicate (stagedFiles)
+						if (stagedFiles.ContainsValue(file))
+						{
+							// Add file (new instance)
+							workingTree.Add(file.path1 + file.path2, new VCFile(file));
+						}
+						else
+						{
+							// Add file
+							workingTree.Add(file.path1 + file.path2, file);
+						}
 					}
 				}
 				

@@ -55,6 +55,18 @@ namespace ThinksquirrelSoftware.UnityVersionControl.Core
 		private bool mSelected = false;
 		#endregion
 		
+		#region Constructors
+		public VCFile() {}
+		public VCFile(VCFile template)
+		{
+			mFileState1 = template.fileState1;
+			mFileState2 = template.fileState2;
+			mName1 = template.name1;
+			mName2 = template.name2;
+			mPath1 = template.path1;
+			mPath2 = template.path2;
+		}
+		#endregion
 		#region Public properties
 		public FileState fileState1
 		{
