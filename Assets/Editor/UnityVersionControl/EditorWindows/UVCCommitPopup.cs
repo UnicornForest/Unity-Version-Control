@@ -39,6 +39,7 @@ public class UVCCommitPopup : EditorWindow
 	private UVCBrowser browser;
 	private string commitMessage = string.Empty;
 	private bool cancel = false;
+	private bool showOutput = false;
 
 	/// <summary>
 	/// Initialize the commit popup.
@@ -63,16 +64,19 @@ public class UVCCommitPopup : EditorWindow
 	{
 		if (browser != null)
 		{
-			GUILayout.Label("Message");
+			GUILayout.Label("Commit Message:");
 			
 			commitMessage = GUILayout.TextArea(commitMessage, GUILayout.ExpandHeight(true));
+			
+			GUILayout.Space(6);
+			showOutput = GUILayout.Toggle(showOutput, "Show output");
 			
 			GUILayout.BeginHorizontal();
 			GUILayout.FlexibleSpace();
 			if (GUILayout.Button("OK"))
 			{
 				this.Close();
-				UVCProcessPopup.Init(VersionControl.Commit(CommandLine.EmptyHandler, commitMessage.ToLiteral(), false, BrowserUtility.selectedFileCache), false, true, browser.OnProcessStop);
+				UVCProcessPopup.Init(VersionControl.Commit(CommandLine.EmptyHandler, commitMessage.ToLiteral(), !showOutput, BrowserUtility.selectedFileCache), true, true, browser.OnProcessStop);
 			}
 			GUILayout.Space(10);
 			if (GUILayout.Button("Cancel"))
