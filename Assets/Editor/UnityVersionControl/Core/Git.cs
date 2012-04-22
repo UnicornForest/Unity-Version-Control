@@ -303,7 +303,7 @@ namespace ThinksquirrelSoftware.UnityVersionControl.Core
 				f.Append("--amend ");
 			}
 			
-			f.Append("-m").Append(messageStringLiteral);
+			f.Append("-m ").Append(messageStringLiteral);
 			
 			foreach(var file in files)
 			{
