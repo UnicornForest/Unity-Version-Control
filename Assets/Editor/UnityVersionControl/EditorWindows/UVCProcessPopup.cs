@@ -142,6 +142,7 @@ public class UVCProcessPopup : EditorWindow
 			}
 			else if (!process.HasExited)
 			{
+				process.Kill();
 				exitCallback(-9999);
 			}
 			else
