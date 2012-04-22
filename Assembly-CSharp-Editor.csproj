@@ -53,7 +53,7 @@
      <Compile Include="Assets\Editor\UnityVersionControl\EditorWindows\UVCCommitPopup.cs" />
      <Compile Include="Assets\Editor\UnityVersionControl\EditorWindows\UVCProcessPopup.cs" />
      <Compile Include="Assets\Editor\UnityVersionControl\Helpers\StringHelpers.cs" />
-     <Compile Include="Assets\Editor\UnityVersionControl\Tests\CoreTests.cs" />
+     <Compile Include="Assets\Editor\UnityVersionControl\Tests\DebugTests.cs" />
      <Compile Include="Assets\Editor\UnityVersionControl\UserInterface\BrowserUtility.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

@@ -351,6 +351,11 @@ public class UVCBrowser : EditorWindow
 	public void OnProcessStop(int errorCode, string stdout, string stderr)
 	{
 		guiEnabled = true;
+		if (errorCode == 0)
+		{
+			BrowserUtility.stagedFiles.Clear();
+			BrowserUtility.workingTree.Clear();
+		}
 		BrowserUtility.ForceUpdate();
 		Repaint();
 	}
