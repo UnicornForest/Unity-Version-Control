@@ -23,7 +23,6 @@
 //    You should have received a copy of the GNU General Public License
 //    along with Unity Version Control.  If not, see <http://www.gnu.org/licenses/>.
 //
-#define DEBUG
 #if DEBUG
 using UnityEditor;
 using UnityEngine;
@@ -92,6 +91,12 @@ namespace ThinksquirrelSoftware.UnityVersionControl.Tests
 			}
 			
 			
+		}
+		
+		[MenuItem ("Version Control/Debug/Other Tests/Re-open Project")]
+		static void OtherTest_ReopenProject()
+		{	
+			EditorApplication.OpenProject(Application.dataPath.Substring(0, Application.dataPath.Length - 7));	
 		}
 		
 		static void OnProcessExit(object sender, System.EventArgs e)
