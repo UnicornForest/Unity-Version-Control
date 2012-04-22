@@ -40,6 +40,7 @@ public class UVCCommitPopup : EditorWindow
 	private string commitMessage = string.Empty;
 	private bool cancel = false;
 	private bool showOutput = false;
+	private bool amend = false;
 
 	/// <summary>
 	/// Initialize the commit popup.
@@ -66,17 +67,30 @@ public class UVCCommitPopup : EditorWindow
 		{
 			GUILayout.Label("Commit Message:");
 			
-			commitMessage = GUILayout.TextArea(commitMessage, GUILayout.ExpandHeight(true));
+			commitMessage = EditorGUILayout.TextArea(commitMessage, GUILayout.ExpandHeight(true));
 			
 			GUILayout.Space(6);
 			showOutput = GUILayout.Toggle(showOutput, "Show output");
+			amend = GUILayout.Toggle(amend, "Amend latest commit");
 			
 			GUILayout.BeginHorizontal();
 			GUILayout.FlexibleSpace();
 			if (GUILayout.Button("OK"))
 			{
 				this.Close();
-				UVCProcessPopup.Init(VersionControl.Commit(CommandLine.EmptyHandler, commitMessage.ToLiteral(), !showOutput, BrowserUtility.selectedFileCache), true, true, browser.OnProcessStop);
+				if (amend)
+				{
+					if (EditorUtility.DisplayDialog(
+						"Confirm Amend?",
+			            "It is not recommended to amend commits that have already been pushed to a remote!", "Ok", "Cancel"))
+					{
+						UVCProcessPopup.Init(VersionControl.Commit(CommandLine.EmptyHandler, commitMessage.ToLiteral(), false, BrowserUtility.selectedFileCache), !showOutput, true, browser.OnProcessStop);
+					}
+				}
+				else
+				{
+					UVCProcessPopup.Init(VersionControl.Commit(CommandLine.EmptyHandler, commitMessage.ToLiteral(), false, BrowserUtility.selectedFileCache), !showOutput, true, browser.OnProcessStop);
+				}
 			}
 			GUILayout.Space(10);
 			if (GUILayout.Button("Cancel"))
