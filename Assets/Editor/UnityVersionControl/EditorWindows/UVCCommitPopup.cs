@@ -27,17 +27,22 @@ using UnityEngine;
 using ThinksquirrelSoftware.UnityVersionControl.Core;
 using ThinksquirrelSoftware.UnityVersionControl.UserInterface;
 using ThinksquirrelSoftware.UnityVersionControl.Helpers;
+using System.Collections.Generic;
 
 /// <summary>
 /// The commit popup editor window.
 /// </summary>
 /// TODO: Add a list of previous user commit messages (store in EditorPrefs, to keep it from being versioned)
-/// TODO: Add a toggle to amend commits
 /// TODO: Add a toggle to push commits
 public class UVCCommitPopup : EditorWindow
 {
+	// Up to 30 old commit messages
+	private const int oldCommitsMaxLength = 30;
+	
 	private UVCBrowser browser;
 	private string commitMessage = string.Empty;
+	public string[] oldCommits;
+	public int oldCommitSelection = 0;
 	private bool cancel = false;
 	private bool showOutput = false;
 	private bool amend = false;
@@ -59,6 +64,23 @@ public class UVCCommitPopup : EditorWindow
 	void OnEnable()
 	{
 		this.minSize = new Vector2(350, 200);
+		LoadOldCommits();
+	}
+	
+	void LoadOldCommits()
+	{
+		string old = EditorPrefs.GetString("UnityVersionControl.OldCommitMessages", null);
+		
+		var oldCommitsList = new List<string>();
+		oldCommitsList.Add(string.Empty);
+		
+		if (old != null)
+		{
+			oldCommitsList.AddRange(old.Split('\0'));
+		}
+		
+		oldCommits = oldCommitsList.ToArray();
+		
 	}
 	
 	void OnGUI()
@@ -69,7 +91,18 @@ public class UVCCommitPopup : EditorWindow
 			
 			commitMessage = EditorGUILayout.TextArea(commitMessage, GUILayout.ExpandHeight(true));
 			
+			oldCommits[0] = commitMessage;
+			
+			int selection = EditorGUILayout.Popup(oldCommitSelection, oldCommits, GUILayout.ExpandWidth(true));
+			
+			if (selection != oldCommitSelection)
+			{
+				selection = oldCommitSelection;
+				commitMessage = oldCommits[oldCommitSelection];
+			}
+			
 			GUILayout.Space(6);
+			
 			showOutput = GUILayout.Toggle(showOutput, "Show output");
 			amend = GUILayout.Toggle(amend, "Amend previous commit");
 			
@@ -77,6 +110,7 @@ public class UVCCommitPopup : EditorWindow
 			GUILayout.FlexibleSpace();
 			if (GUILayout.Button("OK"))
 			{
+				EditorPrefs.SetString("UnityVersionControl.OldCommitMessages", string.Join("\0", oldCommits));
 				this.Close();
 				if (amend)
 				{
