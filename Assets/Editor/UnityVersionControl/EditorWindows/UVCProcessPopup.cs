@@ -34,7 +34,7 @@ public class UVCProcessPopup : EditorWindow
 {
 	private Vector2 scrollPosition;
 	private System.Diagnostics.Process process;
-	private bool exitOnCompletion = true;
+	private bool exitOnCompletion = false;
 	private bool logErrors = true;
 	private System.Action<int> exitCallback;
 	private string command;
@@ -67,7 +67,9 @@ public class UVCProcessPopup : EditorWindow
 		{
 			window.command = process.StartInfo.FileName + " " + process.StartInfo.Arguments;
 		}
+#if !DEBUG		
 		window.exitOnCompletion = exitOnCompletion;
+#endif
 		window.exitCallback = exitCallback;
 		window.ShowPopup();
 		
