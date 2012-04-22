@@ -34,6 +34,9 @@ namespace ThinksquirrelSoftware.UnityVersionControl.Helpers
 {
 	public static class StringHelpers
 	{
+		/// <summary>
+		/// Converts a string to a C sharp string literal.
+		/// </summary>
 		public static string ToLiteral(this string input)
 	    {
 	        var writer = new StringWriter();
@@ -41,5 +44,37 @@ namespace ThinksquirrelSoftware.UnityVersionControl.Helpers
 	        provider.GenerateCodeFromExpression(new CodePrimitiveExpression(input), writer, null);
 	        return writer.GetStringBuilder().ToString();
 	    }
+		
+		/// <summary>
+		/// Converts a byte array to a hex string.
+		/// </summary>
+		public static string UnicodeToHexString(string input)
+		{
+			byte[] barray = Encoding.Unicode.GetBytes(input);
+		    char[] c = new char[barray.Length * 2];
+		    byte b;
+		    for (int i = 0; i < barray.Length; ++i)
+		    {
+		        b = ((byte)(barray[i] >> 4));
+		        c[i * 2] = (char)(b > 9 ? b + 0x37 : b + 0x30);
+		        b = ((byte)(barray[i] & 0xF));
+		        c[i * 2 + 1] = (char)(b > 9 ? b + 0x37 : b + 0x30);
+		    }
+		
+		    return new string(c);
+		}
+		
+		/// <summary>
+		/// Converts a hex string to a Unicode string.
+		/// </summary>
+		public static string HexStringToUnicode(string hexString)
+		{
+			int NumberChars = hexString.Length;
+			byte[] bytes = new byte[NumberChars / 2];
+			
+			for (int i = 0; i < NumberChars; i += 2)
+			bytes[i / 2] = System.Convert.ToByte(hexString.Substring(i, 2), 16);
+			return Encoding.Unicode.GetString(bytes);
+		}
 	}
 }

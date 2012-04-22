@@ -76,11 +76,11 @@ public class UVCCommitPopup : EditorWindow
 		
 		if (old != null)
 		{
-			oldCommitsList.AddRange(old.Split('\0'));
+			var temp = StringHelpers.HexStringToUnicode(old).Split(System.Convert.ToChar(0x0));
+			oldCommitsList.AddRange(temp);
 		}
 		
 		oldCommits = oldCommitsList.ToArray();
-		
 	}
 	
 	void OnGUI()
@@ -93,12 +93,14 @@ public class UVCCommitPopup : EditorWindow
 			
 			oldCommits[0] = commitMessage;
 			
+			GUI.SetNextControlName("Selection");
 			int selection = EditorGUILayout.Popup(oldCommitSelection, oldCommits, GUILayout.ExpandWidth(true));
 			
 			if (selection != oldCommitSelection)
 			{
-				selection = oldCommitSelection;
+				oldCommitSelection = selection;
 				commitMessage = oldCommits[oldCommitSelection];
+				GUI.FocusControl("Selection");
 			}
 			
 			GUILayout.Space(6);
@@ -110,8 +112,21 @@ public class UVCCommitPopup : EditorWindow
 			GUILayout.FlexibleSpace();
 			if (GUILayout.Button("OK"))
 			{
-				EditorPrefs.SetString("UnityVersionControl.OldCommitMessages", string.Join("\0", oldCommits));
+				if (oldCommits.Length > oldCommitsMaxLength)
+				{
+					string[] temp = new string[30];
+					System.Array.ConstrainedCopy(oldCommits, 0, temp, 0, 30);
+					string str = string.Join(System.Convert.ToChar(0x0).ToString(), temp);
+					EditorPrefs.SetString("UnityVersionControl.OldCommitMessages", StringHelpers.UnicodeToHexString(str));
+				}
+				else
+				{
+					string str = string.Join(System.Convert.ToChar(0x0).ToString(), oldCommits);
+					EditorPrefs.SetString("UnityVersionControl.OldCommitMessages", StringHelpers.UnicodeToHexString(str));
+				}
+				
 				this.Close();
+				
 				if (amend)
 				{
 					if (EditorUtility.DisplayDialog(
