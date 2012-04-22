@@ -45,13 +45,13 @@ namespace ThinksquirrelSoftware.UnityVersionControl.Core
 			return CommandLine.RunCommand(mHgCommand, args, exitEventHandler);
 		}
 		
-		/// TODO: Implement this
+		/// TODO: Implement Hg
 		internal static bool ProjectHasRepository()
 		{
 			throw new System.NotImplementedException();
 		}
 		
-		/// TODO: Implement this
+		/// TODO: Implement Hg
 		internal static string RepositoryLocation()
 		{
 			throw new System.NotImplementedException();
@@ -62,7 +62,7 @@ namespace ThinksquirrelSoftware.UnityVersionControl.Core
 		/// </summary>
 		internal static void EmptyHandler(object sender, System.EventArgs e) { }
 		
-		// TODO: Implement this
+		// TODO: Implement Hg
 		internal static VCFile[] ParseFiles(string input)
 		{
 			throw new System.NotImplementedException();

@@ -23,7 +23,6 @@
 //    You should have received a copy of the GNU General Public License
 //    along with Unity Version Control.  If not, see <http://www.gnu.org/licenses/>.
 //
-#define DEBUG
 #if DEBUG
 using UnityEditor;
 using UnityEngine;
@@ -31,7 +30,7 @@ using ThinksquirrelSoftware.UnityVersionControl.Core;
 
 namespace ThinksquirrelSoftware.UnityVersionControl.Tests
 {
-	public class CoreTests
+	public static class CoreTests
 	{	
 		[MenuItem ("Version Control/Debug/Core Tests/Init")]
 	    static void Test1()

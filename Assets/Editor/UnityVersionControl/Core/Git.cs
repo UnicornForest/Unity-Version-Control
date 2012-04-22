@@ -30,33 +30,18 @@ namespace ThinksquirrelSoftware.UnityVersionControl.Core
 {
 	public static class Git
 	{
+		// Default - "git"
+		const string mGitCommand = "git";
+		
 		/// <summary>
 		/// Runs git asynchronously with the specified arguments.
 		/// </summary>
 		/// <remarks>
 		/// Returns the process (with output and error streams redirected) to be handled on an exit event.
 		/// </remarks>
-		public static Process RunGit(string args, System.EventHandler exitEventHandler)
+		internal static Process RunGit(string args, System.EventHandler exitEventHandler)
 		{
-			var process = new System.Diagnostics.Process();
-			
-			process.StartInfo.FileName = "git";
-			process.StartInfo.Arguments = args;
-			
-			process.StartInfo.UseShellExecute = false;
-			process.StartInfo.CreateNoWindow = true;
-			
-			if (exitEventHandler != null)
-			{
-				process.EnableRaisingEvents = true;
-				process.StartInfo.RedirectStandardOutput = true;
-				process.StartInfo.RedirectStandardError = true;
-				process.Exited += exitEventHandler;
-			}
-			
-			process.Start();
-			
-			return process;
+			return CommandLine.RunCommand(mGitCommand, args, exitEventHandler);
 		}
 		
 		/// <summary>
@@ -65,14 +50,14 @@ namespace ThinksquirrelSoftware.UnityVersionControl.Core
 		/// <returns>
 		/// True if the project has a git repository, otherwise false.
 		/// </returns>
-		public static bool ProjectHasRepository()
+		internal static bool ProjectHasRepository()
 		{
-			var gitProcess = RunGit("rev-parse --is-inside-work-tree", EmptyHandler);
+			var gitProcess = RunGit("rev-parse --is-inside-work-tree", CommandLine.EmptyHandler);
 			bool exited = gitProcess.WaitForExit(5000);
 			
 			if (!exited)
 			{
-				// TODO: This needs to fail and throw an exception.
+				// TODO: This needs to fail and throw an exception. (ProjectHasRepository)
 				return false;
 			}
 			
@@ -90,17 +75,17 @@ namespace ThinksquirrelSoftware.UnityVersionControl.Core
 		/// <summary>
 		/// Returns the location of the project's repository.
 		/// </summary>
-		public static string RepositoryLocation()
+		internal static string RepositoryLocation()
 		{
 			if (!ProjectHasRepository())
 				return null;
 			
-			var gitProcess = RunGit("rev-parse --show-toplevel", EmptyHandler);
+			var gitProcess = RunGit("rev-parse --show-toplevel", CommandLine.EmptyHandler);
 			bool exited = gitProcess.WaitForExit(5000);
 			
 			if (!exited)
 			{
-				// TODO: This needs to fail and throw an exception.
+				// TODO: This needs to fail and throw an exception. (RepositoryLocation)
 				return null;
 			}
 			
@@ -110,14 +95,9 @@ namespace ThinksquirrelSoftware.UnityVersionControl.Core
 			}
 			else
 			{
-				// TODO: This needs to fail and throw an exception.
+				// TODO: This needs to fail and throw an exception. (RepositoryLocation)
 				return null;
 			}
-		}
-		
-		private static void EmptyHandler(object sender, System.EventArgs e)
-		{
-			// Empty process handler. Used when waiting for a process to exit, in order to still get standard output and error streams.
 		}
 	
 		internal static VCFile[] ParseFiles(string input)
@@ -259,6 +239,97 @@ namespace ThinksquirrelSoftware.UnityVersionControl.Core
 			}
 			
 			return files.ToArray();
+		}
+		
+		internal static Process GetDiff(System.EventHandler exitEventHandler, params VCFile[] files)
+		{
+			StringBuilder f = new StringBuilder();
+				
+			foreach(var file in files)
+			{
+				if (string.IsNullOrEmpty(file.path2))
+					f.Append('"').Append(file.path1).Append('"').Append(' ');
+				else
+					f.Append(file.path2).Append(' ');
+			}
+			
+			return Git.RunGit("diff -no-ext-diff " + f.ToString(), exitEventHandler);
+		}
+		
+		internal static Process Add(System.EventHandler exitEventHandler, params VCFile[] files)
+		{
+			var f = new StringBuilder().Append("add ");
+			
+			foreach(var file in files)
+			{
+				if (string.IsNullOrEmpty(file.path2))
+				{
+					f.Append('"').Append(file.path1).Append('"').Append(' ');
+				}
+				else
+				{
+					f.Append(file.path2).Append(' ');
+				}
+			}
+			
+			return RunGit(f.ToString(), exitEventHandler);
+		}
+		
+		internal static Process Remove(System.EventHandler exitEventHandler, params VCFile[] files)
+		{
+			var f = new StringBuilder().Append("rm -f ");
+			
+			foreach(var file in files)
+			{
+				if (string.IsNullOrEmpty(file.path2))
+				{
+					f.Append('"').Append(file.path1).Append('"').Append(' ');
+				}
+				else
+				{
+					f.Append(file.path2).Append(' ');
+				}
+			}
+			
+			return RunGit(f.ToString(), exitEventHandler);
+		}
+		
+		internal static Process Commit(System.EventHandler exitEventHandler, string message, bool amend, params VCFile[] files)
+		{
+			var f = new StringBuilder().Append("commit -m ").Append('"').Append(message).Append('"');
+			
+			foreach(var file in files)
+			{
+				if (string.IsNullOrEmpty(file.path2))
+				{
+					f.Append('"').Append(file.path1).Append('"').Append(' ');
+				}
+				else
+				{
+					f.Append(file.path2).Append(' ');
+				}
+			}
+			
+			return RunGit(f.ToString(), exitEventHandler);
+		}
+		
+		internal static Process Reset(System.EventHandler exitEventHandler, string branch, params VCFile[] files)
+		{
+			var f = new StringBuilder().Append("reset ").Append(branch).Append(' ');
+			
+			foreach(var file in files)
+			{
+				if (string.IsNullOrEmpty(file.path2))
+				{
+					f.Append('"').Append(file.path1).Append('"').Append(' ');
+				}
+				else
+				{
+					f.Append(file.path2).Append(' ');
+				}
+			}
+			
+			return RunGit(f.ToString(), exitEventHandler);
 		}
 	}
 }

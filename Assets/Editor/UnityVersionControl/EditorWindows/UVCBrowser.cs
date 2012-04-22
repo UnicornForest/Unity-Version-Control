@@ -28,6 +28,13 @@ using ThinksquirrelSoftware.UnityVersionControl.Core;
 using ThinksquirrelSoftware.UnityVersionControl.UserInterface;
 using System.Collections.Generic;
 
+/// <summary>
+/// The main browser editor window.
+/// </summary>
+/// TODO: Ability to resize different panels and colums, where appropriate.
+/// TODO: Filter for different file states
+/// TODO: Make it "pretty" - button graphics, custom GUI style, etc.
+/// TODO: Unity display errors when doing large operations
 public class UVCBrowser : EditorWindow
 {
 	// Scroll view positions
@@ -41,6 +48,9 @@ public class UVCBrowser : EditorWindow
 	
 	// Controls initialization of the GUI style
 	private bool initGUIStyle;
+	
+	// Controls the overall GUI
+	private bool guiEnabled = true;
 	
 	[MenuItem ("Version Control/Browser")]
 	static void Init()
@@ -61,7 +71,7 @@ public class UVCBrowser : EditorWindow
 		BrowserUtility.Update();
 	}
 	
-	// Initializes the selection gui style
+	// Initializes the selection GUI style
 	void InitializeStyle()
 	{
 		initGUIStyle = true;
@@ -76,6 +86,8 @@ public class UVCBrowser : EditorWindow
 	
 	void OnGUI()
 	{	
+		GUI.enabled = guiEnabled;
+		
 		if (!initGUIStyle)
 		{
 			InitializeStyle();
@@ -92,7 +104,8 @@ public class UVCBrowser : EditorWindow
 			
 			GUILayout.FlexibleSpace();
 			
-			GUILayout.Button("Reinitialize");
+			if (GUILayout.Button("Reinitialize"))
+				BrowserUtility.OnButton_Init(this);
 		}
 		else
 		{
@@ -102,39 +115,17 @@ public class UVCBrowser : EditorWindow
 			
 			GUILayout.FlexibleSpace();
 			
-			GUILayout.Button("Initialize");
+			if (GUILayout.Button("Initialize"))
+				BrowserUtility.OnButton_Init(this);
 		}
 
 		GUILayout.EndHorizontal();
 		#endregion
 		
 		#region Main button row
-		
 		GUILayout.BeginHorizontal();
-		
-		GUILayout.Button("Commit", GUILayout.Width(70), GUILayout.Height(60));
-		
-		GUILayout.Button("Checkout", GUILayout.Width(70), GUILayout.Height(60));
-		
-		GUILayout.Button("Reset", GUILayout.Width(70), GUILayout.Height(60));
-		
-		GUILayout.Button("Add", GUILayout.Width(70), GUILayout.Height(60));
-		
-		GUILayout.Button("Remove", GUILayout.Width(70), GUILayout.Height(60));
-		
-		GUILayout.Button("Fetch", GUILayout.Width(70), GUILayout.Height(60));
-		
-		GUILayout.Button("Pull", GUILayout.Width(70), GUILayout.Height(60));
-		
-		GUILayout.Button("Push", GUILayout.Width(70), GUILayout.Height(60));
-		
-		GUILayout.Button("Branch", GUILayout.Width(70), GUILayout.Height(60));
-		
-		GUILayout.Button("Tag", GUILayout.Width(70), GUILayout.Height(60));
-		
-		GUILayout.FlexibleSpace();
-		
-		GUILayout.Button("Settings", GUILayout.Width(70), GUILayout.Height(60));
+	
+		DisplayButtons();
 		
 		GUILayout.EndHorizontal();
 		#endregion
@@ -209,10 +200,7 @@ public class UVCBrowser : EditorWindow
 		#region 3rd scroll area - Diff
 		GUILayout.Label("Diff", EditorStyles.toolbarButton, GUILayout.ExpandWidth(true));
 		scrollPosition4 = GUILayout.BeginScrollView(scrollPosition4, false, true);
-		if (!string.IsNullOrEmpty(BrowserUtility.diffString))
-		{
-			GUILayout.Label(BrowserUtility.diffString);
-		}
+		GUILayout.Label(BrowserUtility.diffString);
 		GUILayout.EndScrollView();
 		#endregion
 		
@@ -223,6 +211,55 @@ public class UVCBrowser : EditorWindow
 		DisplayStatusBar();
 		#endregion
 		
+		GUI.enabled = guiEnabled;
+	}
+	
+	void DisplayButtons()
+	{
+		GUI.enabled = BrowserUtility.stagedFiles.Count > 0;
+		
+		if (GUILayout.Button("Commit", GUILayout.Width(70), GUILayout.Height(60)))
+			BrowserUtility.OnButton_Commit(this);
+		
+		GUI.enabled = guiEnabled;
+		
+		if (GUILayout.Button("Checkout", GUILayout.Width(70), GUILayout.Height(60)))
+			BrowserUtility.OnButton_Checkout(this);
+		
+		if (GUILayout.Button("Reset", GUILayout.Width(70), GUILayout.Height(60)))
+			BrowserUtility.OnButton_Reset(this);
+		
+		GUI.enabled = guiEnabled && BrowserUtility.workingTreeSelected;
+		
+		if (GUILayout.Button("Add", GUILayout.Width(70), GUILayout.Height(60)))
+			BrowserUtility.OnButton_Add(this);
+		
+		GUI.enabled = guiEnabled && BrowserUtility.anyFileSelected;
+		
+		if (GUILayout.Button("Remove", GUILayout.Width(70), GUILayout.Height(60)))
+			BrowserUtility.OnButton_Remove(this);
+		
+		GUI.enabled = guiEnabled;
+		
+		if (GUILayout.Button("Fetch", GUILayout.Width(70), GUILayout.Height(60)))
+			BrowserUtility.OnButton_Fetch(this);
+		
+		if (GUILayout.Button("Pull", GUILayout.Width(70), GUILayout.Height(60)))
+			BrowserUtility.OnButton_Pull(this);
+		
+		if (GUILayout.Button("Push", GUILayout.Width(70), GUILayout.Height(60)))
+			BrowserUtility.OnButton_Push(this);
+		
+		if (GUILayout.Button("Branch", GUILayout.Width(70), GUILayout.Height(60)))
+			BrowserUtility.OnButton_Branch(this);
+		
+		if (GUILayout.Button("Tag", GUILayout.Width(70), GUILayout.Height(60)))
+			BrowserUtility.OnButton_Tag(this);
+		
+		GUILayout.FlexibleSpace();
+		
+		if (GUILayout.Button("Settings", GUILayout.Width(70), GUILayout.Height(60)))	
+			BrowserUtility.OnButton_Settings(this);
 	}
 	
 	void DisplayFile(VCFile file, int index)
@@ -245,18 +282,15 @@ public class UVCBrowser : EditorWindow
 		
 		if (t2 != file.selected)
 		{
-			file.selected = t2;
-			BrowserUtility.UpdateDiffPanel();
+			BrowserUtility.ValidateSelection(file, t2);
 		}
 		else if (t3 != file.selected)
 		{
-			file.selected = t3;
-			BrowserUtility.UpdateDiffPanel();
+			BrowserUtility.ValidateSelection(file, t3);
 		}
 		else if (t1 != file.selected)
 		{
-			file.selected = t1;
-			BrowserUtility.UpdateDiffPanel();
+			BrowserUtility.ValidateSelection(file, t1);
 		}	
 	}
 	
@@ -311,5 +345,23 @@ public class UVCBrowser : EditorWindow
 			sb.Append("Clean");
 		
 		GUILayout.Label(sb.ToString(), EditorStyles.toolbarButton, GUILayout.ExpandWidth(true));
+	}
+
+	public void OnProcessStart()
+	{
+		guiEnabled = false;
+	}
+	
+	public void OnProcessStop(int errorCode)
+	{
+		guiEnabled = true;
+		BrowserUtility.ForceUpdate();
+		Repaint();
+	}
+	
+	public void OnCancelWindow()
+	{
+		guiEnabled = true;
+		Repaint();
 	}
 }

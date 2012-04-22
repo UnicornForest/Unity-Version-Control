@@ -149,17 +149,58 @@ namespace ThinksquirrelSoftware.UnityVersionControl.Core
 			switch(mVersionControlType)
 			{
 			case VersionControlType.Git:
-				
-				StringBuilder f = new StringBuilder();
-				
-				foreach(var file in files)
-				{
-					if (string.IsNullOrEmpty(file.path2))
-						f.Append('"').Append(file.path1).Append('"').Append(' ');
-					else
-						f.Append(file.path2).Append(' ');
-				}
-				return Git.RunGit("diff -no-ext-diff " + f.ToString(), exitEventHandler);
+				return Git.GetDiff(exitEventHandler, files);
+			case VersionControlType.Hg:
+				throw new System.NotImplementedException();
+			}
+			
+			return null;
+		}
+		
+		/// <summary>
+		/// Add the specified file(s).
+		/// </summary>
+		/// TODO: Implement Hg
+		public static Process Add(System.EventHandler exitEventHandler, params VCFile[] files)
+		{
+			switch(mVersionControlType)
+			{
+			case VersionControlType.Git:
+				return Git.Add(exitEventHandler, files);
+			case VersionControlType.Hg:
+				throw new System.NotImplementedException();
+			}
+			
+			return null;
+		}
+		
+		/// <summary>
+		/// Remove the specified file(s).
+		/// </summary>
+		/// TODO: Implement Hg
+		public static Process Remove(System.EventHandler exitEventHandler, params VCFile[] files)
+		{
+			switch(mVersionControlType)
+			{
+			case VersionControlType.Git:
+				return Git.Remove(exitEventHandler, files);
+			case VersionControlType.Hg:
+				throw new System.NotImplementedException();
+			}
+			
+			return null;
+		}
+		
+		/// <summary>
+		/// Remove the specified file(s).
+		/// </summary>
+		/// TODO: Implement Hg
+		public static Process Reset(System.EventHandler exitEventHandler, string branch, params VCFile[] files)
+		{
+			switch(mVersionControlType)
+			{
+			case VersionControlType.Git:
+				return Git.Reset(exitEventHandler, branch, files);
 			case VersionControlType.Hg:
 				throw new System.NotImplementedException();
 			}
@@ -175,7 +216,7 @@ namespace ThinksquirrelSoftware.UnityVersionControl.Core
 			switch(mVersionControlType)
 			{
 			case VersionControlType.Git:
-				throw new System.NotImplementedException();
+				return Git.Commit(exitEventHandler, message, amend, files);
 			case VersionControlType.Hg:
 				throw new System.NotImplementedException();
 			}

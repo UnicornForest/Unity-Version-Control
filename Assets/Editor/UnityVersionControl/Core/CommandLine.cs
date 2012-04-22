@@ -57,5 +57,14 @@ namespace ThinksquirrelSoftware.UnityVersionControl.Core
 			
 			return process;
 		}
+		
+		/// <summary>
+		/// Represents an empty event handler. Used in order to get standard output and error streams.
+		/// </summary>
+		public static void EmptyHandler(object sender, System.EventArgs e)
+		{
+			// Empty process handler. Used in order to get standard output and error streams.
+		}
+		
 	}
 }
