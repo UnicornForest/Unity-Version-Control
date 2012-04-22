@@ -84,7 +84,7 @@ public class UVCCommitPopup : EditorWindow
 						"Warning - changing history",
 			            "You have chosen to amend the previous commit - this alters history and will cause problems if you have already pushed the previous commit to a remote. Are you sure you want to continue?", "Ok", "Cancel"))
 					{
-						UVCProcessPopup.Init(VersionControl.Commit(CommandLine.EmptyHandler, commitMessage.ToLiteral(), false, BrowserUtility.selectedFileCache), !showOutput, true, browser.OnProcessStop);
+						UVCProcessPopup.Init(VersionControl.Commit(CommandLine.EmptyHandler, commitMessage.ToLiteral(), true, BrowserUtility.selectedFileCache), !showOutput, true, browser.OnProcessStop);
 					}
 				}
 				else
