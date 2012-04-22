@@ -294,9 +294,9 @@ namespace ThinksquirrelSoftware.UnityVersionControl.Core
 			return RunGit(f.ToString(), exitEventHandler);
 		}
 		
-		internal static Process Commit(System.EventHandler exitEventHandler, string message, bool amend, params VCFile[] files)
+		internal static Process Commit(System.EventHandler exitEventHandler, string messageStringLiteral, bool amend, params VCFile[] files)
 		{
-			var f = new StringBuilder().Append("commit -m ").Append('"').Append(message).Append('"');
+			var f = new StringBuilder().Append("commit -m ").Append(messageStringLiteral);
 			
 			foreach(var file in files)
 			{

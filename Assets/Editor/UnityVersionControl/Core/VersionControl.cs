@@ -209,14 +209,14 @@ namespace ThinksquirrelSoftware.UnityVersionControl.Core
 		}
 		
 		/// <summary>
-		/// Commits a change.
+		/// Commits a change. Takes a string literal as the message.
 		/// </summary>
-		public static Process Commit(System.EventHandler exitEventHandler, string message, bool amend, params VCFile[] files)
+		public static Process Commit(System.EventHandler exitEventHandler, string messageStringLiteral, bool amend, params VCFile[] files)
 		{
 			switch(mVersionControlType)
 			{
 			case VersionControlType.Git:
-				return Git.Commit(exitEventHandler, message, amend, files);
+				return Git.Commit(exitEventHandler, messageStringLiteral, amend, files);
 			case VersionControlType.Hg:
 				throw new System.NotImplementedException();
 			}
