@@ -32,6 +32,8 @@ namespace ThinksquirrelSoftware.UnityVersionControl.Core
 	{
 		// Default - "git"
 		const string mGitCommand = "git";
+		// Configuration argument to add to every command
+		const string mGitConfig = "-c core.quotepath=false ";
 		
 		/// <summary>
 		/// Runs git asynchronously with the specified arguments.
@@ -41,7 +43,7 @@ namespace ThinksquirrelSoftware.UnityVersionControl.Core
 		/// </remarks>
 		internal static Process RunGit(string args, System.EventHandler exitEventHandler)
 		{
-			return CommandLine.RunCommand(mGitCommand, args, exitEventHandler);
+			return CommandLine.RunCommand(mGitCommand, mGitConfig + args, exitEventHandler);
 		}
 		
 		/// <summary>
