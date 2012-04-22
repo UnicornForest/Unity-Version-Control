@@ -71,8 +71,8 @@ public class UVCCommitPopup : EditorWindow
 			GUILayout.FlexibleSpace();
 			if (GUILayout.Button("OK"))
 			{
-				UVCProcessPopup.Init(VersionControl.Commit(CommandLine.EmptyHandler, commitMessage.ToLiteral(), false, BrowserUtility.selectedFileCache), false, true, browser.OnProcessStop);
 				this.Close();
+				UVCProcessPopup.Init(VersionControl.Commit(CommandLine.EmptyHandler, commitMessage.ToLiteral(), false, BrowserUtility.selectedFileCache), false, true, browser.OnProcessStop);
 			}
 			GUILayout.Space(10);
 			if (GUILayout.Button("Cancel"))
