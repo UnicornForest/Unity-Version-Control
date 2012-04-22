@@ -25,22 +25,6 @@
 namespace ThinksquirrelSoftware.UnityVersionControl.Core
 {
 	/// <summary>
-	/// Represents the state of a file.
-	/// </summary>
-	public enum FileState
-	{
-		Unmodified,
-		Modified,
-		Added,
-		Deleted,
-		Renamed,
-		Copied,
-		Unmerged,
-		Untracked,
-		Ignored
-	}
-	
-	/// <summary>
 	/// Represents a version control file.
 	/// </summary>
 	public class VCFile
@@ -67,6 +51,7 @@ namespace ThinksquirrelSoftware.UnityVersionControl.Core
 			mPath2 = template.path2;
 		}
 		#endregion
+		
 		#region Public properties
 		public FileState fileState1
 		{
