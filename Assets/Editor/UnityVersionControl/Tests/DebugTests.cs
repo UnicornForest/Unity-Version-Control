@@ -1,5 +1,5 @@
-// Test setup for core commands
-// CoreTests.cs
+// Debug test commands
+// DebugTests.cs
 // Unity Version Control
 //  
 // Authors:
@@ -23,6 +23,7 @@
 //    You should have received a copy of the GNU General Public License
 //    along with Unity Version Control.  If not, see <http://www.gnu.org/licenses/>.
 //
+#define DEBUG
 #if DEBUG
 using UnityEditor;
 using UnityEngine;
@@ -30,23 +31,23 @@ using ThinksquirrelSoftware.UnityVersionControl.Core;
 
 namespace ThinksquirrelSoftware.UnityVersionControl.Tests
 {
-	public static class CoreTests
+	public static class DebugTests
 	{	
 		[MenuItem ("Version Control/Debug/Core Tests/Init")]
-	    static void Test1()
+	    static void CoreTest_Init()
 		{
 			VersionControl.Initialize(OnProcessExit);
 		}
 		
 		[MenuItem ("Version Control/Debug/Core Tests/File List")]
-	    static void Test2()
+	    static void CoreTest_FileList()
 		{
 			Debug.Log("Getting file list...");
 			VersionControl.FindFiles(OnFindFiles);
 		}
 		
 		[MenuItem ("Version Control/Debug/Core Tests/Bad Command")]
-	    static void Test3()
+	    static void CoreTest_BadCommand()
 		{
 			if (VersionControl.versionControlType == VersionControlType.Git)
 			{
@@ -59,11 +60,38 @@ namespace ThinksquirrelSoftware.UnityVersionControl.Tests
 		}
 		
 		[MenuItem ("Version Control/Debug/Core Tests/Repository Location")]
-	    static void Test4()
+	    static void CoreTest_RepositoryLocation()
 		{
 			string message = VersionControl.RepositoryLocation();
 			
 			EditorUtility.DisplayDialog("Repository Location", message, "Ok", "Cancel");
+		}
+		
+		[MenuItem ("Version Control/Debug/GUI Tests/Init")]
+		static void GUITest_Init()
+		{
+			UVCProcessPopup.Init(VersionControl.Initialize(CommandLine.EmptyHandler), false, true, null, false);
+		}
+		
+		[MenuItem ("Version Control/Debug/GUI Tests/File List")]
+		static void GUITest_FileList()
+		{
+			UVCProcessPopup.Init(VersionControl.FindFiles(CommandLine.EmptyHandler), false, true, OnFindFiles_GUI, false);
+		}
+		
+		[MenuItem ("Version Control/Debug/GUI Tests/Bad Command")]
+		static void GUITest_BadCommand()
+		{
+			if (VersionControl.versionControlType == VersionControlType.Git)
+			{
+				UVCProcessPopup.Init(Git.RunGit("notarealcommand", CommandLine.EmptyHandler), false, true, null, false);
+			}
+			else
+			{
+				UVCProcessPopup.Init(Hg.RunHg("notarealcommand", CommandLine.EmptyHandler), false, true, null, false);
+			}
+			
+			
 		}
 		
 		static void OnProcessExit(object sender, System.EventArgs e)
@@ -87,9 +115,17 @@ namespace ThinksquirrelSoftware.UnityVersionControl.Tests
 		
 		static void OnFindFiles(object sender, System.EventArgs e)
 		{
-			var process = sender as System.Diagnostics.Process;
-			
-			var files = VersionControl.ParseFiles(process.StandardOutput.ReadToEnd());
+			OnFindFiles_INTERNAL((sender as System.Diagnostics.Process).StandardOutput.ReadToEnd());
+		}
+		
+		static void OnFindFiles_GUI(int exitCode, string stdout, string stderr)
+		{
+			OnFindFiles_INTERNAL(stdout);
+		}
+		
+		static void OnFindFiles_INTERNAL(string input)
+		{
+			var files = VersionControl.ParseFiles(input);
 			
 			Debug.Log("Staged Files:");
 			
