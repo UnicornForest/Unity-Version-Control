@@ -259,7 +259,7 @@ namespace ThinksquirrelSoftware.UnityVersionControl.Core
 		/// TODO: (Git) Files that are detected as deleted aren't getting added to the index.
 		internal static Process Add(System.EventHandler exitEventHandler, params VCFile[] files)
 		{
-			var f = new StringBuilder().Append("add ");
+			var f = new StringBuilder().Append("add -A ");
 			
 			foreach(var file in files)
 			{
