@@ -215,14 +215,10 @@ public class UVCBrowser : EditorWindow
 	}
 	
 	void DisplayButtons()
-	{
-		GUI.enabled = BrowserUtility.stagedFiles.Count > 0;
-		
+	{	
 		if (GUILayout.Button("Commit", GUILayout.Width(70), GUILayout.Height(60)))
 			BrowserUtility.OnButton_Commit(this);
-		
-		GUI.enabled = guiEnabled;
-		
+			
 		if (GUILayout.Button("Checkout", GUILayout.Width(70), GUILayout.Height(60)))
 			BrowserUtility.OnButton_Checkout(this);
 		
