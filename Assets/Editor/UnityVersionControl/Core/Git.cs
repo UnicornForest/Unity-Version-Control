@@ -299,7 +299,7 @@ namespace ThinksquirrelSoftware.UnityVersionControl.Core
 			var f = new StringBuilder().Append("commit ");
 			
 			if (amend)
-				f.Append("-- amend ");
+				f.Append("--amend ");
 			
 			f.Append("-m").Append(messageStringLiteral);
 			
