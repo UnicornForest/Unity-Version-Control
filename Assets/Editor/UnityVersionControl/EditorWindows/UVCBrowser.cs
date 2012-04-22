@@ -200,7 +200,7 @@ public class UVCBrowser : EditorWindow
 		#region 3rd scroll area - Diff
 		GUILayout.Label("Diff", EditorStyles.toolbarButton, GUILayout.ExpandWidth(true));
 		scrollPosition4 = GUILayout.BeginScrollView(scrollPosition4, false, true);
-		GUILayout.Label(BrowserUtility.diffString);
+		EditorGUILayout.SelectableLabel(BrowserUtility.diffString, GUILayout.ExpandHeight(true));
 		GUILayout.EndScrollView();
 		#endregion
 		
@@ -348,7 +348,7 @@ public class UVCBrowser : EditorWindow
 		guiEnabled = false;
 	}
 	
-	public void OnProcessStop(int errorCode)
+	public void OnProcessStop(int errorCode, string stdout, string stderr)
 	{
 		guiEnabled = true;
 		BrowserUtility.ForceUpdate();

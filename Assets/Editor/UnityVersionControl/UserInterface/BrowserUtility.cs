@@ -216,7 +216,7 @@ namespace ThinksquirrelSoftware.UnityVersionControl.UserInterface
 		public static void OnButton_Init(UVCBrowser browser)
 		{
 			browser.OnProcessStart();
-			UVCProcessPopup.Init(VersionControl.Initialize(CommandLine.EmptyHandler), true, true, browser.OnProcessStop);
+			UVCProcessPopup.Init(VersionControl.Initialize(CommandLine.EmptyHandler), true, true, browser.OnProcessStop, true);
 		}
 		
 		/// <summary>
@@ -251,7 +251,7 @@ namespace ThinksquirrelSoftware.UnityVersionControl.UserInterface
 		public static void OnButton_Add(UVCBrowser browser)
 		{
 			browser.OnProcessStart();
-			UVCProcessPopup.Init(VersionControl.Add(CommandLine.EmptyHandler, mSelectedFileCache), true, true, browser.OnProcessStop);
+			UVCProcessPopup.Init(VersionControl.Add(CommandLine.EmptyHandler, mSelectedFileCache), true, true, browser.OnProcessStop, true);
 		}
 		
 		/// <summary>
@@ -264,7 +264,7 @@ namespace ThinksquirrelSoftware.UnityVersionControl.UserInterface
 			if (VersionControl.versionControlType == VersionControlType.Git && mStagedFileSelected)
 			{
 				// Git only - Clicking the remove button for a staged file will unstage it
-				UVCProcessPopup.Init(VersionControl.Reset(CommandLine.EmptyHandler, "HEAD", mSelectedFileCache), true, true, browser.OnProcessStop);
+				UVCProcessPopup.Init(VersionControl.Reset(CommandLine.EmptyHandler, "HEAD", mSelectedFileCache), true, true, browser.OnProcessStop, true);
 			}
 			else
 			{
@@ -294,16 +294,16 @@ namespace ThinksquirrelSoftware.UnityVersionControl.UserInterface
 			            "The following files contain changes or information which is not in source control, and will be irretrievably lost if you remove them:\n" + 
 						modFiles.ToString(0, modFiles.Length -1), "Ok", "Cancel"))
 					{
-						UVCProcessPopup.Init(VersionControl.Remove(CommandLine.EmptyHandler, mSelectedFileCache), true, true, browser.OnProcessStop);
+						UVCProcessPopup.Init(VersionControl.Remove(CommandLine.EmptyHandler, mSelectedFileCache), true, true, browser.OnProcessStop, true);
 					}
 					else
 					{
-						browser.OnProcessStop(-9999);
+						browser.OnProcessStop(-9999, null, null);
 					}
 				}
 				else
 				{
-					UVCProcessPopup.Init(VersionControl.Remove(CommandLine.EmptyHandler, mSelectedFileCache), true, true, browser.OnProcessStop);
+					UVCProcessPopup.Init(VersionControl.Remove(CommandLine.EmptyHandler, mSelectedFileCache), true, true, browser.OnProcessStop, true);
 				}
 				
 			}

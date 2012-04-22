@@ -36,12 +36,13 @@ public class UVCProcessPopup : EditorWindow
 	private System.Diagnostics.Process process;
 	private bool exitOnCompletion = false;
 	private bool logErrors = true;
-	private System.Action<int> exitCallback;
+	private System.Action<int, string, string> exitCallback;
 	private string command;
 	private string cancelString = "Cancel";
 	private bool exited = false;
 	private StringBuilder output = new StringBuilder();
 	private StringBuilder error = new StringBuilder();
+	private GUIStyle labelStyle;
 	
 	/// <summary>
 	/// Initialize the process popup.
@@ -56,9 +57,13 @@ public class UVCProcessPopup : EditorWindow
 	/// Should errors be logged to the Unity console?
 	/// </param>
 	/// <param name='exitCallback'>
-	/// An exit callback. This callback must accept an integer parameter for the exit code. If the process is null or not completed, the code -9999 is passed to the callback.
+	/// An exit callback. This callback must accept an integer parameter for the exit code, and two string parameters for the output and error streams.
+	/// If the process is null or not completed, the arguments (-9999, null, null) are passed.
 	/// </param>
-	public static void Init(System.Diagnostics.Process process, bool exitOnCompletion, bool logErrors, System.Action<int> exitCallback)
+	///<param name='unityWorkaround'>
+	/// A workaround for a Unity bug. Toggle this if Unity throws OnGUI errors.
+	/// </param>
+	public static void Init(System.Diagnostics.Process process, bool exitOnCompletion, bool logErrors, System.Action<int, string, string> exitCallback, bool unityWorkaround)
 	{
 		var window = EditorWindow.CreateInstance<UVCProcessPopup>();
 		window.title = "Running Process";
@@ -71,15 +76,22 @@ public class UVCProcessPopup : EditorWindow
 		window.exitOnCompletion = exitOnCompletion;
 #endif
 		window.exitCallback = exitCallback;
+		
 		window.ShowPopup();
 		
-		// Workaround for Unity bug
-		GUIUtility.ExitGUI();
+		if (unityWorkaround)
+		{
+			// Workaround for Unity bug
+			GUIUtility.ExitGUI();
+		}
 	}
 	
 	void OnEnable()
 	{
-		this.minSize = new Vector2(350, 200);
+		this.minSize = new Vector2(400, 200);
+		position = new Rect(position.x, position.y, this.minSize.x, this.minSize.y);
+		labelStyle = new GUIStyle(EditorStyles.textField);
+		labelStyle.wordWrap = true;
 	}
 	
 	void Update()
@@ -98,13 +110,17 @@ public class UVCProcessPopup : EditorWindow
 					if (logErrors)
 					{
 						error.Append(process.StandardError.ReadToEnd());
-						
+							
 						if (error.Length > 0)
-							Debug.LogError(error.ToString() + " (" + command + ")");
+						{
+							exitOnCompletion = false;
+						}
 					}
 					
 					if (exitOnCompletion)
 						this.Close();
+					else
+						Repaint();
 				}
 			}
 		}
@@ -114,13 +130,30 @@ public class UVCProcessPopup : EditorWindow
 	{
 		if (process != null)
 		{
-			GUILayout.Label(command);
+			EditorGUILayout.SelectableLabel(command);
 			
 			scrollPosition = GUILayout.BeginScrollView(scrollPosition);
 			
-			GUI.enabled = false;
-			GUILayout.TextArea(output.ToString());
-			GUI.enabled = true;
+			bool err = false;
+			
+			if (exited)
+			{
+				if (error.Length > 0)
+				{
+					err = true;
+				}
+			}
+			
+			if (err)
+			{
+				GUI.contentColor = Color.red;
+				EditorGUILayout.SelectableLabel(error.ToString(), labelStyle, GUILayout.ExpandHeight(true));
+				GUI.contentColor = Color.white;
+			}
+			else
+			{
+				EditorGUILayout.SelectableLabel(output.ToString(), labelStyle, GUILayout.ExpandHeight(true));
+			}
 			
 			GUILayout.EndScrollView();
 			
@@ -140,16 +173,16 @@ public class UVCProcessPopup : EditorWindow
 		{
 			if (process == null)
 			{
-				exitCallback(-9999);
+				exitCallback(-9999, null, null);
 			}
 			else if (!process.HasExited)
 			{
 				process.Kill();
-				exitCallback(-9999);
+				exitCallback(-9999, null, null);
 			}
 			else
 			{
-				exitCallback(process.ExitCode);
+				exitCallback(process.ExitCode, output.ToString(), error.ToString());
 			}
 		}
 	}
