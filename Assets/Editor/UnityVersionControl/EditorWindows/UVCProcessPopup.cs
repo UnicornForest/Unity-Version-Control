@@ -152,6 +152,7 @@ public class UVCProcessPopup : EditorWindow
 			}
 			else
 			{
+				GUI.contentColor = Color.white;
 				EditorGUILayout.SelectableLabel(output.ToString(), labelStyle, GUILayout.ExpandHeight(true));
 			}
 			
