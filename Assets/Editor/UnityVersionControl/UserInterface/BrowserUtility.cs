@@ -381,6 +381,14 @@ namespace ThinksquirrelSoftware.UnityVersionControl.UserInterface
 		}
 		
 		/// <summary>
+		/// Raises the Merge Button event.
+		/// </summary>
+		/// TODO: Implement button
+		public static void OnButton_Merge(UVCBrowser browser)
+		{
+		}
+		
+		/// <summary>
 		/// Raises the Tag Button event.
 		/// </summary>
 		/// TODO: Implement button

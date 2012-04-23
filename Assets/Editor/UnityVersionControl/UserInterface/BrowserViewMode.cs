@@ -1,7 +1,7 @@
-// Version control file state
-// FileState.cs
+// File Browser View Mode
+// BrowserViewMode.cs
 // Unity Version Control
-// 
+//  
 // Authors:
 //       Josh Montoute <josh@thinksquirrel.com>
 // 
@@ -22,22 +22,15 @@
 //    You should have received a copy of the GNU General Public License
 //    along with Unity Version Control.  If not, see <http://www.gnu.org/licenses/>.
 //
-namespace ThinksquirrelSoftware.UnityVersionControl.Core
+
+namespace ThinksquirrelSoftware.UnityVersionControl.UserInterface
 {
 	/// <summary>
-	/// Represents the state of a file.
+	/// Browser view mode. Mini mode is designed for artists, and hides extra functionality.
 	/// </summary>
-	[System.Flags]
-	public enum FileState
+	public enum BrowserViewMode
 	{
-		Unmodified = 1,
-		Modified = 2,
-		Added = 4,
-		Deleted = 8,
-		Renamed = 16,
-		Copied = 32,
-		Unmerged = 64,
-		Untracked = 128,
-		Ignored = 256,
+		Default,
+		Mini
 	}
 }

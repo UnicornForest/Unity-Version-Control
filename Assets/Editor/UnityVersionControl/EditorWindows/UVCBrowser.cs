@@ -25,6 +25,7 @@
 using UnityEditor;
 using UnityEngine;
 using ThinksquirrelSoftware.UnityVersionControl.Core;
+using ThinksquirrelSoftware.UnityVersionControl.Helpers;
 using ThinksquirrelSoftware.UnityVersionControl.UserInterface;
 using System.Collections.Generic;
 
@@ -37,6 +38,9 @@ using System.Collections.Generic;
 /// TODO: Unity display errors when doing large operations
 public class UVCBrowser : EditorWindow
 {
+	// View mode
+	private BrowserViewMode viewMode;
+	
 	// Scroll view positions
 	private Vector2 mainScrollPosition;
 	private Vector2 scrollPosition1;
@@ -49,6 +53,10 @@ public class UVCBrowser : EditorWindow
 	private float verticalResizeWidget1;
 	private bool drag1 = false;
 	private bool drag2 = false;
+	
+	// Filters
+	private FileState stagedFilesFilter = (FileState)1;
+	private FileState workingTreeFilter = (FileState)1;
 	
 	// GUI styles
 	private GUIStyle selectionStyle;
@@ -128,8 +136,13 @@ public class UVCBrowser : EditorWindow
 			
 			GUILayout.FlexibleSpace();
 			
-			if (GUILayout.Button("Reinitialize"))
-				BrowserUtility.OnButton_Init(this);
+			if (viewMode != BrowserViewMode.Mini)
+			{
+				if (GUILayout.Button("Reinitialize"))
+					BrowserUtility.OnButton_Init(this);
+			}
+			
+			viewMode = (BrowserViewMode)EditorGUILayout.EnumPopup(viewMode);
 		}
 		else
 		{
@@ -141,6 +154,8 @@ public class UVCBrowser : EditorWindow
 			
 			if (GUILayout.Button("Initialize"))
 				BrowserUtility.OnButton_Init(this);
+			
+			viewMode = (BrowserViewMode)EditorGUILayout.EnumPopup(viewMode);
 		}
 
 		GUILayout.EndHorizontal();
@@ -160,13 +175,25 @@ public class UVCBrowser : EditorWindow
 		mainScrollPosition = GUILayout.BeginScrollView(mainScrollPosition);
 		
 		GUILayout.BeginHorizontal();
-		GUILayout.BeginVertical(GUILayout.Width(horizontalResizeWidget1 - 3));
+		if (viewMode != BrowserViewMode.Mini)
+		{
+			GUILayout.BeginVertical(GUILayout.Width(horizontalResizeWidget1 - 3));
+		}
+		else
+		{
+			GUILayout.BeginVertical();
+		}
 		
 		#region First scroll area - Staged files (git)
-		if (VersionControl.versionControlType == VersionControlType.Git)
+		if (VersionControl.versionControlType == VersionControlType.Git && viewMode != BrowserViewMode.Mini)
 		{
 			GUILayout.BeginVertical(GUILayout.Height(verticalResizeWidget1 - 3));
+			
+			GUILayout.BeginHorizontal();
 			GUILayout.Label("Staged files", EditorStyles.toolbarButton);
+			GUILayout.Label("Filter", EditorStyles.toolbarButton, GUILayout.Width(40));
+			stagedFilesFilter = (FileState)EditorGUILayout.EnumMaskField(stagedFilesFilter, EditorStyles.toolbarPopup, GUILayout.Width(100));
+			GUILayout.EndHorizontal();
 			
 			scrollPosition2 = GUILayout.BeginScrollView(scrollPosition2, false, true);
 			GUILayout.BeginVertical();
@@ -183,7 +210,7 @@ public class UVCBrowser : EditorWindow
 			int i = 0;
 			foreach(var file in keys1)
 			{
-				DisplayFile(BrowserUtility.stagedFiles[file], i);
+				DisplayFile(BrowserUtility.stagedFiles[file], ref i, true);
 				
 				i++;
 			}
@@ -195,21 +222,29 @@ public class UVCBrowser : EditorWindow
 		#endregion
 		
 		#region Resize widget
-		GUI.backgroundColor = new Color(.5f, .5f, .5f, 1);
-		if (GUILayout.RepeatButton("", EditorStyles.toolbarButton, GUILayout.Height(6), GUILayout.ExpandWidth(true)))
+		if (VersionControl.versionControlType == VersionControlType.Git && viewMode != BrowserViewMode.Mini)
 		{
-			BeginDrag(true);
+			GUI.backgroundColor = new Color(.5f, .5f, .5f, 1);
+			if (GUILayout.RepeatButton("", EditorStyles.toolbarButton, GUILayout.Height(6), GUILayout.ExpandWidth(true)))
+			{
+				BeginDrag(true);
+			}
+			EditorGUIUtility.AddCursorRect (GUILayoutUtility.GetLastRect(), MouseCursor.ResizeVertical);
+			GUI.backgroundColor = Color.white;
 		}
-		GUI.backgroundColor = Color.white;
 		#endregion
 		
 		#region Second scroll area - Working tree
-		if (VersionControl.versionControlType == VersionControlType.Git)
+		if (VersionControl.versionControlType == VersionControlType.Git && viewMode != BrowserViewMode.Mini)
 		{
 			GUILayout.BeginVertical(GUILayout.Height(position.height - 126 - verticalResizeWidget1 - 3));
 		}
 		
+		GUILayout.BeginHorizontal();
 		GUILayout.Label("Working tree", EditorStyles.toolbarButton);
+		GUILayout.Label("Filter", EditorStyles.toolbarButton, GUILayout.Width(40));
+		workingTreeFilter = (FileState)EditorGUILayout.EnumMaskField(workingTreeFilter, EditorStyles.toolbarPopup, GUILayout.Width(100));
+		GUILayout.EndHorizontal();
 		
 		scrollPosition3 = GUILayout.BeginScrollView(scrollPosition3, false, true);
 		GUILayout.BeginVertical();
@@ -226,14 +261,14 @@ public class UVCBrowser : EditorWindow
 		int j = 0;
 		foreach(var file in keys2)
 		{
-			DisplayFile(BrowserUtility.workingTree[file], j);
+			DisplayFile(BrowserUtility.workingTree[file], ref j, false);
 			
 			j++;
 		}
 		
 		GUILayout.EndVertical();
 		GUILayout.EndScrollView();
-		if (VersionControl.versionControlType == VersionControlType.Git)
+		if (VersionControl.versionControlType == VersionControlType.Git && viewMode != BrowserViewMode.Mini)
 		{
 			GUILayout.EndVertical();
 		}
@@ -242,24 +277,30 @@ public class UVCBrowser : EditorWindow
 		GUILayout.EndVertical();
 		
 		#region Resize widget
-		GUI.backgroundColor *= .5f;
-		if (GUILayout.RepeatButton("", vertWidgetStyle, GUILayout.Width(4), GUILayout.ExpandHeight(true)))
+		if (viewMode != BrowserViewMode.Mini)
 		{
-			BeginDrag(false);
+			GUI.backgroundColor *= .5f;
+			if (GUILayout.RepeatButton("", vertWidgetStyle, GUILayout.Width(4), GUILayout.ExpandHeight(true)))
+			{
+				BeginDrag(false);
+			}
+			EditorGUIUtility.AddCursorRect (GUILayoutUtility.GetLastRect(), MouseCursor.ResizeHorizontal);   
+			GUI.backgroundColor = Color.white;
 		}
-		GUI.backgroundColor = Color.white;
 		#endregion
-		
-		GUILayout.BeginVertical(GUILayout.Width(position.width - horizontalResizeWidget1));
 		
 		#region 3rd scroll area - Diff
-		GUILayout.Label("Diff", EditorStyles.toolbarButton, GUILayout.ExpandWidth(true));
-		scrollPosition4 = GUILayout.BeginScrollView(scrollPosition4, false, true);
-		EditorGUILayout.SelectableLabel(BrowserUtility.diffString, GUILayout.ExpandHeight(true));
-		GUILayout.EndScrollView();
+		if (viewMode != BrowserViewMode.Mini)
+		{
+			GUILayout.BeginVertical(GUILayout.Width(position.width - horizontalResizeWidget1));
+			GUILayout.Label("Diff", EditorStyles.toolbarButton, GUILayout.ExpandWidth(true));
+			scrollPosition4 = GUILayout.BeginScrollView(scrollPosition4, false, true);
+			EditorGUILayout.SelectableLabel(BrowserUtility.diffString, GUILayout.ExpandHeight(true));
+			GUILayout.EndScrollView();
+			GUILayout.EndVertical();
+		}
 		#endregion
 		
-		GUILayout.EndVertical();
 		GUILayout.EndHorizontal();
 		
 		GUILayout.EndScrollView();
@@ -298,8 +339,11 @@ public class UVCBrowser : EditorWindow
 		
 		GUI.enabled = guiEnabled;
 		
-		if (GUILayout.Button("Fetch", GUILayout.Width(70), GUILayout.Height(60)))
-			BrowserUtility.OnButton_Fetch(this);
+		if (viewMode != BrowserViewMode.Mini)
+		{
+			if (GUILayout.Button("Fetch", GUILayout.Width(70), GUILayout.Height(60)))
+				BrowserUtility.OnButton_Fetch(this);
+		}
 		
 		if (GUILayout.Button("Pull", GUILayout.Width(70), GUILayout.Height(60)))
 			BrowserUtility.OnButton_Pull(this);
@@ -307,11 +351,17 @@ public class UVCBrowser : EditorWindow
 		if (GUILayout.Button("Push", GUILayout.Width(70), GUILayout.Height(60)))
 			BrowserUtility.OnButton_Push(this);
 		
-		if (GUILayout.Button("Branch", GUILayout.Width(70), GUILayout.Height(60)))
-			BrowserUtility.OnButton_Branch(this);
-		
-		if (GUILayout.Button("Tag", GUILayout.Width(70), GUILayout.Height(60)))
-			BrowserUtility.OnButton_Tag(this);
+		if (viewMode != BrowserViewMode.Mini)
+		{
+			if (GUILayout.Button("Branch", GUILayout.Width(70), GUILayout.Height(60)))
+				BrowserUtility.OnButton_Branch(this);
+			
+			if (GUILayout.Button("Merge", GUILayout.Width(70), GUILayout.Height(60)))
+				BrowserUtility.OnButton_Merge(this);
+			
+			if (GUILayout.Button("Tag", GUILayout.Width(70), GUILayout.Height(60)))
+				BrowserUtility.OnButton_Tag(this);
+		}
 		
 		GUILayout.FlexibleSpace();
 		
@@ -319,8 +369,26 @@ public class UVCBrowser : EditorWindow
 			BrowserUtility.OnButton_Settings(this);
 	}
 	
-	void DisplayFile(VCFile file, int index)
+	void DisplayFile(VCFile file, ref int index, bool staged)
 	{
+		// Check filter
+		if (staged)
+		{
+			if (!stagedFilesFilter.Has(file.fileState1))
+			{
+				index--;
+				return;
+			}
+		}
+		else
+		{
+			if (!workingTreeFilter.Has(file.fileState2))
+			{
+				index--;
+				return;
+			}
+		}
+		
 		if (index % 2 == 0)
 			GUI.backgroundColor = Color.gray;
 		else
@@ -443,18 +511,38 @@ public class UVCBrowser : EditorWindow
 	{
 		if (drag1 || drag2)
 		{
+			if (drag1)
+			{
+				EditorGUIUtility.AddCursorRect (position, MouseCursor.ResizeVertical);
+			}
+			else
+			{
+				EditorGUIUtility.AddCursorRect (position, MouseCursor.ResizeHorizontal);
+			}
+			
 			if (Event.current.type == EventType.MouseUp)
 			{
 				drag1 = false;
 				drag2 = false;
+				Repaint();
 				return;
 			}
 			
 			if (Event.current.type == EventType.MouseDrag)
 			{
 				Vector2 delta = Event.current.delta;
-				if (drag1)
+				Vector2 pos = Event.current.mousePosition;
+				
+				if (!position.Contains(pos))
 				{
+					drag1 = false;
+					drag2 = false;
+					Repaint();
+					return;
+				}
+				
+				if (drag1)
+				{	
 					verticalResizeWidget1 = Mathf.Clamp(verticalResizeWidget1 += delta.y, 60, position.height - 180);
 				}
 				else if (drag2)

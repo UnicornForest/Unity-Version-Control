@@ -365,6 +365,7 @@ namespace ThinksquirrelSoftware.UnityVersionControl.Core
 		internal static Process Commit(System.EventHandler exitEventHandler, string messageStringLiteral, bool amend, params VCFile[] files)
 		{
 			var f = new StringBuilder().Append("commit ");
+			var f2 = new StringBuilder().Append("add ");
 			
 			if (amend)
 			{
@@ -378,12 +379,20 @@ namespace ThinksquirrelSoftware.UnityVersionControl.Core
 				if (string.IsNullOrEmpty(file.path2))
 				{
 					f.Append('"').Append(file.path1).Append('"').Append(' ');
+					if (file.fileState1 == FileState.Untracked)
+						f2.Append('"').Append(file.path1).Append('"').Append(' ');
+					
 				}
 				else
 				{
-					f.Append(file.path2).Append(' ');
+					f.Append('"').Append(file.path2).Append('"').Append(' ');
+					if (file.fileState1 == FileState.Untracked)
+						f2.Append('"').Append(file.path1).Append('"').Append(' ');
 				}
 			}
+			
+			// Run git add for untracked files
+			Git.RunGit(f2.ToString(), null).WaitForExit(6000);
 			
 			return RunGit(f.ToString(), exitEventHandler);
 		}
