@@ -294,11 +294,14 @@ public class UVCBrowser : EditorWindow
 	{
 		GUILayout.BeginHorizontal();
 		
-		int currentBranch = EditorGUILayout.Popup(BrowserUtility.localBranchIndex, BrowserUtility.localBranchNames, EditorStyles.toolbarButton, GUILayout.Width(150));
-			
-		if (currentBranch != BrowserUtility.localBranchIndex)
+		if (BrowserUtility.localBranchNames != null)
 		{
-			DisplaySwitchBranchPopup(currentBranch);
+			int currentBranch = EditorGUILayout.Popup(BrowserUtility.localBranchIndex, BrowserUtility.localBranchNames, EditorStyles.toolbarButton, GUILayout.Width(150));
+				
+			if (currentBranch != BrowserUtility.localBranchIndex)
+			{
+				DisplaySwitchBranchPopup(currentBranch);
+			}
 		}
 		
 		#region status strings

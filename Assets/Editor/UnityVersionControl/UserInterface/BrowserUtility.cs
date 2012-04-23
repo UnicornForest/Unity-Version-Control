@@ -41,7 +41,7 @@ namespace ThinksquirrelSoftware.UnityVersionControl.UserInterface
 		#region Member fields
 		/// The frame count and update rate for updates
 		private static int mFrameCount;
-		private const int mUpdateRate = 600;
+		private const int mUpdateRate = 250;
 		
 		/// Repository location
 		private static string mRepositoryLocation;
@@ -101,6 +101,10 @@ namespace ThinksquirrelSoftware.UnityVersionControl.UserInterface
 			get
 			{
 				return mLocalBranchIndex;
+			}
+			set
+			{
+				mLocalBranchIndex = value;
 			}
 		}
 		public static Dictionary<string, VCFile> stagedFiles
