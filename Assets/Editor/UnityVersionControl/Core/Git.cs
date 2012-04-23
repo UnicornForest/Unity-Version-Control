@@ -374,25 +374,36 @@ namespace ThinksquirrelSoftware.UnityVersionControl.Core
 			
 			f.Append("-m ").Append(messageStringLiteral);
 			
+			bool add = false;
+			
 			foreach(var file in files)
 			{
 				if (string.IsNullOrEmpty(file.path2))
 				{
 					f.Append('"').Append(file.path1).Append('"').Append(' ');
 					if (file.fileState1 == FileState.Untracked)
+					{
+						add = true;
 						f2.Append('"').Append(file.path1).Append('"').Append(' ');
+					}
 					
 				}
 				else
 				{
 					f.Append('"').Append(file.path2).Append('"').Append(' ');
 					if (file.fileState1 == FileState.Untracked)
+					{
+						add = true;
 						f2.Append('"').Append(file.path1).Append('"').Append(' ');
+					}
 				}
 			}
 			
-			// Run git add for untracked files
-			Git.RunGit(f2.ToString(), null).WaitForExit(6000);
+			if (add)
+			{
+				// Run git add for untracked files
+				Git.RunGit(f2.ToString(), null).WaitForExit(6000);
+			}
 			
 			return RunGit(f.ToString(), exitEventHandler);
 		}
