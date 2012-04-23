@@ -43,8 +43,13 @@ namespace ThinksquirrelSoftware.UnityVersionControl.UserInterface
 		private static int mFrameCount;
 		private const int mUpdateRate = 600;
 		
-		/// The repository location
+		/// Repository location
 		private static string mRepositoryLocation;
+		
+		// Branches
+		private static VCBranch[] mBranches;
+		private static string[] mLocalBranchNames;
+		private static int mLocalBranchIndex;
 		
 		// Staged files and working tree
 		private static Dictionary<string, VCFile> mStagedFiles = new Dictionary<string, VCFile>();
@@ -75,6 +80,27 @@ namespace ThinksquirrelSoftware.UnityVersionControl.UserInterface
 			get
 			{
 				return mRepositoryLocation;
+			}
+		}
+		public static VCBranch[] branches
+		{
+			get
+			{
+				return mBranches;
+			}
+		}
+		public static string[] localBranchNames
+		{
+			get
+			{
+				return mLocalBranchNames;
+			}
+		}
+		public static int localBranchIndex
+		{
+			get
+			{
+				return mLocalBranchIndex;
 			}
 		}
 		public static Dictionary<string, VCFile> stagedFiles
@@ -443,9 +469,12 @@ namespace ThinksquirrelSoftware.UnityVersionControl.UserInterface
 			
 			// Get list of files
 			VersionControl.FindFiles(OnFindFiles);
+			
+			// Get list of branches
+			VersionControl.FindBranches(OnFindBranches);
 		}
 		
-		// TODO: Handle errors
+		// TODO: Handle errors (BrowserUtility.OnFindFiles)
 		private static void OnFindFiles(object sender, System.EventArgs e)
 		{
 			var process = sender as System.Diagnostics.Process;
@@ -516,7 +545,7 @@ namespace ThinksquirrelSoftware.UnityVersionControl.UserInterface
 			}
 			#endregion
 			
-			// Addition
+			#region addition
 			foreach(var file in files)
 			{
 				// Staged files
@@ -572,12 +601,35 @@ namespace ThinksquirrelSoftware.UnityVersionControl.UserInterface
 					}
 				}
 			}
+			#endregion
 			
 			// Validate selection
 			ValidateSelection(null, false);
 			
 			// Update stats
 			UpdateStats();
+		}
+		
+		// TODO: Handle errors (BrowserUtility.OnFindBranches)
+		private static void OnFindBranches(object sender, System.EventArgs e)
+		{
+			mBranches = VersionControl.ParseBranches((sender as System.Diagnostics.Process).StandardOutput.ReadToEnd());
+			
+			var localBranchList = new List<string>();
+			
+			for(int i = 0; i < mBranches.Length; i++)
+			{
+				if (!mBranches[i].isRemote)
+				{
+					localBranchList.Add(mBranches[i].name);
+					if (mBranches[i].isCurrent)
+					{
+						mLocalBranchIndex = i;
+					}
+				}
+			}
+			
+			mLocalBranchNames = localBranchList.ToArray();
 		}
 		
 		// TODO: "Pretty" diff parsing

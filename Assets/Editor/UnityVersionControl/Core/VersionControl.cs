@@ -110,18 +110,33 @@ namespace ThinksquirrelSoftware.UnityVersionControl.Core
 		/// <summary>
 		/// Finds all repository files, asynchronously. Use ParseFiles to parse the result.
 		/// </summary>
-		/// TODO: Implement Hg
 		public static Process FindFiles(System.EventHandler exitEventHandler)
 		{
 			switch(mVersionControlType)
 			{
 			case VersionControlType.Git:
-				return Git.RunGit("status --porcelain --ignored --untracked-files -z", exitEventHandler);
+				return Git.FindFiles(exitEventHandler);
 			case VersionControlType.Hg:
-				throw new System.NotImplementedException();
+				return Hg.FindFiles(exitEventHandler);
 			}
 			
 			return null;
+		}
+		
+		/// <summary>
+		/// Finds all repository branches, asynchronously. Use ParseBranches to parse the result.
+		/// </summary>
+		public static Process FindBranches(System.EventHandler exitEventHandler)
+		{
+			switch(mVersionControlType)
+			{
+			case VersionControlType.Git:
+				return Git.FindBranches(exitEventHandler);
+			case VersionControlType.Hg:
+				return Hg.FindBranches(exitEventHandler);
+			}
+			
+			return null;		
 		}
 		
 		/// <summary>
@@ -135,6 +150,22 @@ namespace ThinksquirrelSoftware.UnityVersionControl.Core
 				return Git.ParseFiles(input);
 			case VersionControlType.Hg:
 				return Hg.ParseFiles(input);
+			}
+			
+			return null;
+		}
+		
+		/// <summary>
+		/// Parses all repository branches.
+		/// </summary>
+		public static VCBranch[] ParseBranches(string input)
+		{
+			switch(mVersionControlType)
+			{
+			case VersionControlType.Git:	
+				return Git.ParseBranches(input);
+			case VersionControlType.Hg:
+				return Hg.ParseBranches(input);
 			}
 			
 			return null;

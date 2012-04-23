@@ -59,7 +59,7 @@ namespace ThinksquirrelSoftware.UnityVersionControl.Core
 			
 			if (!exited)
 			{
-				// TODO: This needs to fail and throw an exception. (ProjectHasRepository)
+				// TODO: This needs to fail and throw an exception. (Git.ProjectHasRepository)
 				return false;
 			}
 			
@@ -87,7 +87,7 @@ namespace ThinksquirrelSoftware.UnityVersionControl.Core
 			
 			if (!exited)
 			{
-				// TODO: This needs to fail and throw an exception. (RepositoryLocation)
+				// TODO: This needs to fail and throw an exception. (Git.RepositoryLocation)
 				return null;
 			}
 			
@@ -97,11 +97,21 @@ namespace ThinksquirrelSoftware.UnityVersionControl.Core
 			}
 			else
 			{
-				// TODO: This needs to fail and throw an exception. (RepositoryLocation)
+				// TODO: This needs to fail and throw an exception. (Git.RepositoryLocation)
 				return null;
 			}
 		}
 	
+		internal static Process FindFiles(System.EventHandler exitEventHandler)
+		{
+			return Git.RunGit("status --porcelain --ignored --untracked-files -z", exitEventHandler);
+		}
+		
+		internal static Process FindBranches(System.EventHandler exitEventHandler)
+		{
+			return Git.RunGit("for-each-ref --format=\"%(refname)\" refs/heads refs/remotes", exitEventHandler);
+		}
+		
 		internal static VCFile[] ParseFiles(string input)
 		{
 			// Split the input.
@@ -241,6 +251,61 @@ namespace ThinksquirrelSoftware.UnityVersionControl.Core
 			}
 			
 			return files.ToArray();
+		}
+		
+		// TODO: Error handling (ParseBranches)
+		internal static VCBranch[] ParseBranches(string input)
+		{
+			
+			var branchList = new List<VCBranch>();
+			
+			// Split input
+			var inputSplit = input.Split('\n');
+			
+			foreach(var str in inputSplit)
+			{	
+				int i = str.LastIndexOf("/") + 1;
+				
+				// Local branch
+				if (str.StartsWith("refs/heads"))
+				{
+					branchList.Add(new VCBranch(str.Substring(i, str.Length - i), null, false, false));
+				}
+				// Remote branch
+				else if (str.StartsWith("refs/remotes"))
+				{
+					branchList.Add(new VCBranch(str.Substring(i, str.Length - i), str.Substring(13, str.LastIndexOf("/") - 13), true, false));
+				}
+			}
+			
+			var proc = Git.RunGit("symbolic-ref HEAD", CommandLine.EmptyHandler);
+			proc.WaitForExit(6000);
+			
+			if (proc.HasExited)
+			{
+				if (proc.ExitCode == 0)
+				{
+					string b = proc.StandardOutput.ReadToEnd();
+					int j = b.LastIndexOf("/") + 1;
+						
+					b = b.Substring(j, b.Length - j - 1);
+					
+					foreach(var branch in branchList)
+					{
+						if (!branch.isRemote && b.Equals(branch.name))
+						{
+							branch.isCurrent = true;
+						}
+					}	
+				}
+			}
+			else
+			{
+				// This is an error situation
+				return null;
+			}
+			
+			return branchList.ToArray();
 		}
 		
 		internal static Process GetDiff(System.EventHandler exitEventHandler, params VCFile[] files)

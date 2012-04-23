@@ -63,7 +63,25 @@ namespace ThinksquirrelSoftware.UnityVersionControl.Core
 		internal static void EmptyHandler(object sender, System.EventArgs e) { }
 		
 		// TODO: Implement Hg
+		internal static Process FindFiles(System.EventHandler exitEventHandler)
+		{
+			throw new System.NotImplementedException();
+		}
+		
+		// TODO: Implement Hg
+		internal static Process FindBranches(System.EventHandler exitEventHandler)
+		{
+			throw new System.NotImplementedException();
+		}
+		
+		// TODO: Implement Hg
 		internal static VCFile[] ParseFiles(string input)
+		{
+			throw new System.NotImplementedException();
+		}
+		
+		// TODO: Implement Hg
+		internal static VCBranch[] ParseBranches(string input)
 		{
 			throw new System.NotImplementedException();
 		}

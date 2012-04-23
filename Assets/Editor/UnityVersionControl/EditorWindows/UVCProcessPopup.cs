@@ -42,7 +42,7 @@ public class UVCProcessPopup : EditorWindow
 	private bool exited = false;
 	private StringBuilder output = new StringBuilder();
 	private StringBuilder error = new StringBuilder();
-	private GUIStyle labelStyle;
+	private static GUIStyle labelStyle;
 	
 	/// <summary>
 	/// Initialize the process popup.
@@ -65,6 +65,8 @@ public class UVCProcessPopup : EditorWindow
 	/// </param>
 	public static void Init(System.Diagnostics.Process process, bool exitOnCompletion, bool logErrors, System.Action<int, string, string> exitCallback, bool unityWorkaround)
 	{
+		labelStyle = new GUIStyle(EditorStyles.textField);
+		labelStyle.wordWrap = true;
 		var window = EditorWindow.CreateInstance<UVCProcessPopup>();
 		window.title = "Running Process";
 		window.process = process;
@@ -90,8 +92,6 @@ public class UVCProcessPopup : EditorWindow
 	{
 		this.minSize = new Vector2(400, 200);
 		position = new Rect(position.x, position.y, this.minSize.x, this.minSize.y);
-		labelStyle = new GUIStyle(EditorStyles.textField);
-		labelStyle.wordWrap = true;
 	}
 	
 	void Update()

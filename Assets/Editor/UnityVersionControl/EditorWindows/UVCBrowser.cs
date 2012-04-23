@@ -292,6 +292,16 @@ public class UVCBrowser : EditorWindow
 	
 	void DisplayStatusBar()
 	{
+		GUILayout.BeginHorizontal();
+		
+		int currentBranch = EditorGUILayout.Popup(BrowserUtility.localBranchIndex, BrowserUtility.localBranchNames, EditorStyles.toolbarButton, GUILayout.Width(150));
+			
+		if (currentBranch != BrowserUtility.localBranchIndex)
+		{
+			DisplaySwitchBranchPopup(currentBranch);
+		}
+		
+		#region status strings
 		var sb = new System.Text.StringBuilder();
 		bool clean = true;
 		
@@ -339,8 +349,23 @@ public class UVCBrowser : EditorWindow
 		
 		if (clean)
 			sb.Append("Clean");
+		#endregion
 		
 		GUILayout.Label(sb.ToString(), EditorStyles.toolbarButton, GUILayout.ExpandWidth(true));
+		
+		GUILayout.EndHorizontal();
+	}
+	
+	// TODO: Implement this (switch branches)
+	void DisplaySwitchBranchPopup(int index)
+	{
+		if (EditorUtility.DisplayDialog(
+						"Confirm Branch Checkout/Clean",
+			            "This will CLEAN the project. Any uncommited changes will be irretrievably lost! Are you sure you want to continue?", "Ok", "Cancel"))
+		{
+			BrowserUtility.localBranchIndex = index;
+			// Switch branches - put this function in BrowserUtility.
+		}
 	}
 
 	public void OnProcessStart()

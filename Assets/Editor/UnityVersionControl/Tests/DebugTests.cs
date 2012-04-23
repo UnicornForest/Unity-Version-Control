@@ -45,6 +45,13 @@ namespace ThinksquirrelSoftware.UnityVersionControl.Tests
 			VersionControl.FindFiles(OnFindFiles);
 		}
 		
+		[MenuItem ("Version Control/Debug/Core Tests/Branch List")]
+	    static void CoreTest_BranchList()
+		{
+			Debug.Log("Getting branch list...");
+			VersionControl.FindBranches(OnFindBranches);
+		}
+		
 		[MenuItem ("Version Control/Debug/Core Tests/Bad Command")]
 	    static void CoreTest_BadCommand()
 		{
@@ -76,6 +83,12 @@ namespace ThinksquirrelSoftware.UnityVersionControl.Tests
 		static void GUITest_FileList()
 		{
 			UVCProcessPopup.Init(VersionControl.FindFiles(CommandLine.EmptyHandler), false, true, OnFindFiles_GUI, false);
+		}
+		
+		[MenuItem ("Version Control/Debug/GUI Tests/Branch List")]
+		static void GUITest_BranchList()
+		{
+			UVCProcessPopup.Init(VersionControl.FindBranches(CommandLine.EmptyHandler), false, true, OnFindBranches_GUI, false);
 		}
 		
 		[MenuItem ("Version Control/Debug/GUI Tests/Bad Command")]
@@ -183,6 +196,48 @@ namespace ThinksquirrelSoftware.UnityVersionControl.Tests
 				if (file.fileState1 == FileState.Ignored && file.fileState2 == FileState.Ignored)
 				{
 					Debug.Log(file.name1);
+				}
+			}
+		}
+		
+		static void OnFindBranches(object sender, System.EventArgs e)
+		{
+			OnFindBranches_INTERNAL((sender as System.Diagnostics.Process).StandardOutput.ReadToEnd());
+		}
+		
+		static void OnFindBranches_GUI(int exitCode, string stdout, string stderr)
+		{
+			OnFindBranches_INTERNAL(stdout);
+		}
+		
+		static void OnFindBranches_INTERNAL(string input)
+		{
+			var branches = VersionControl.ParseBranches(input);
+			
+			Debug.Log("Local Branches:");
+			
+			foreach(var branch in branches)
+			{
+				if (!branch.isRemote)
+				{
+					if (branch.isCurrent)
+					{
+						Debug.Log(branch.name + " (current branch)");
+					}
+					else
+					{
+						Debug.Log(branch.name);
+					}
+				}
+			}
+			
+			Debug.Log("Remote Branches:");
+			
+			foreach(var branch in branches)
+			{
+				if (branch.isRemote)
+				{
+					Debug.Log(branch.name + " (" + branch.remoteName + ")");
 				}
 			}
 		}
