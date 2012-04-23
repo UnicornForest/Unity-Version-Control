@@ -38,13 +38,21 @@ using System.Collections.Generic;
 public class UVCBrowser : EditorWindow
 {
 	// Scroll view positions
+	private Vector2 mainScrollPosition;
 	private Vector2 scrollPosition1;
 	private Vector2 scrollPosition2;
 	private Vector2 scrollPosition3;
 	private Vector2 scrollPosition4;
 	
-	// Selection GUI style
+	// Resize widget locations
+	private float horizontalResizeWidget1;
+	private float verticalResizeWidget1;
+	private bool drag1 = false;
+	private bool drag2 = false;
+	
+	// GUI styles
 	private GUIStyle selectionStyle;
+	private GUIStyle vertWidgetStyle;
 	
 	// Controls initialization of the GUI style
 	private bool initGUIStyle;
@@ -64,6 +72,11 @@ public class UVCBrowser : EditorWindow
 		
 		this.minSize = new Vector2(600, 300);
 		initGUIStyle = false;
+		
+		if (position.width < this.minSize.x || position.height < this.minSize.y)
+		{
+			position = new Rect(position.x, position.y, this.minSize.x, this.minSize.y);
+		}
 	}
 	
 	void Update()
@@ -71,10 +84,11 @@ public class UVCBrowser : EditorWindow
 		BrowserUtility.Update();
 	}
 	
-	// Initializes the selection GUI style
+	// Initialize the GUI styles
 	void InitializeStyle()
 	{
 		initGUIStyle = true;
+		
 		selectionStyle = new GUIStyle(EditorStyles.boldLabel);
 		selectionStyle.fontStyle = FontStyle.Normal;
 		selectionStyle.padding = new RectOffset(0,0,0,0);
@@ -82,6 +96,9 @@ public class UVCBrowser : EditorWindow
 		selectionStyle.normal.background = new Texture2D(1, 1);
 		selectionStyle.normal.background.SetPixel(1, 1, new Color(.25f, .25f, .25f, .25f));
 		selectionStyle.normal.background.Apply();
+		
+		vertWidgetStyle = new GUIStyle(EditorStyles.toolbarButton);
+		vertWidgetStyle.fixedHeight = 0;
 	}
 	
 	void OnGUI()
@@ -91,6 +108,13 @@ public class UVCBrowser : EditorWindow
 		if (!initGUIStyle)
 		{
 			InitializeStyle();
+			
+			// Diff
+			horizontalResizeWidget1 = position.width - 500;
+			
+			// Tree/Index
+			verticalResizeWidget1 = (position.height - 220) / 2;
+		
 		}
 		
 		scrollPosition1 = GUILayout.BeginScrollView(scrollPosition1, GUILayout.Height(110));
@@ -133,12 +157,15 @@ public class UVCBrowser : EditorWindow
 		GUILayout.EndScrollView();
 		
 		
+		mainScrollPosition = GUILayout.BeginScrollView(mainScrollPosition);
+		
 		GUILayout.BeginHorizontal();
-		GUILayout.BeginVertical(GUILayout.ExpandWidth(true));
+		GUILayout.BeginVertical(GUILayout.Width(horizontalResizeWidget1 - 3));
 		
 		#region First scroll area - Staged files (git)
 		if (VersionControl.versionControlType == VersionControlType.Git)
 		{
+			GUILayout.BeginVertical(GUILayout.Height(verticalResizeWidget1 - 3));
 			GUILayout.Label("Staged files", EditorStyles.toolbarButton);
 			
 			scrollPosition2 = GUILayout.BeginScrollView(scrollPosition2, false, true);
@@ -163,10 +190,25 @@ public class UVCBrowser : EditorWindow
 			
 			GUILayout.EndVertical();
 			GUILayout.EndScrollView();
+			GUILayout.EndVertical();
 		}
 		#endregion
 		
+		#region Resize widget
+		GUI.backgroundColor = new Color(.5f, .5f, .5f, 1);
+		if (GUILayout.RepeatButton("", EditorStyles.toolbarButton, GUILayout.Height(6), GUILayout.ExpandWidth(true)))
+		{
+			BeginDrag(true);
+		}
+		GUI.backgroundColor = Color.white;
+		#endregion
+		
 		#region Second scroll area - Working tree
+		if (VersionControl.versionControlType == VersionControlType.Git)
+		{
+			GUILayout.BeginVertical(GUILayout.Height(position.height - 126 - verticalResizeWidget1 - 3));
+		}
+		
 		GUILayout.Label("Working tree", EditorStyles.toolbarButton);
 		
 		scrollPosition3 = GUILayout.BeginScrollView(scrollPosition3, false, true);
@@ -191,11 +233,24 @@ public class UVCBrowser : EditorWindow
 		
 		GUILayout.EndVertical();
 		GUILayout.EndScrollView();
+		if (VersionControl.versionControlType == VersionControlType.Git)
+		{
+			GUILayout.EndVertical();
+		}
 		#endregion
 		
 		GUILayout.EndVertical();
 		
-		GUILayout.BeginVertical(GUILayout.Width(500));
+		#region Resize widget
+		GUI.backgroundColor *= .5f;
+		if (GUILayout.RepeatButton("", vertWidgetStyle, GUILayout.Width(4), GUILayout.ExpandHeight(true)))
+		{
+			BeginDrag(false);
+		}
+		GUI.backgroundColor = Color.white;
+		#endregion
+		
+		GUILayout.BeginVertical(GUILayout.Width(position.width - horizontalResizeWidget1));
 		
 		#region 3rd scroll area - Diff
 		GUILayout.Label("Diff", EditorStyles.toolbarButton, GUILayout.ExpandWidth(true));
@@ -207,8 +262,14 @@ public class UVCBrowser : EditorWindow
 		GUILayout.EndVertical();
 		GUILayout.EndHorizontal();
 		
+		GUILayout.EndScrollView();
+		
 		#region Status bar
 		DisplayStatusBar();
+		#endregion
+		
+		#region Events
+		CheckDrag();
 		#endregion
 		
 		GUI.enabled = guiEnabled;
@@ -296,7 +357,7 @@ public class UVCBrowser : EditorWindow
 		
 		if (BrowserUtility.localBranchNames != null)
 		{
-			int currentBranch = EditorGUILayout.Popup(BrowserUtility.localBranchIndex, BrowserUtility.localBranchNames, EditorStyles.toolbarButton, GUILayout.Width(150));
+			int currentBranch = EditorGUILayout.Popup(BrowserUtility.localBranchIndex, BrowserUtility.localBranchNames, EditorStyles.toolbarPopup, GUILayout.Width(150));
 				
 			if (currentBranch != BrowserUtility.localBranchIndex)
 			{
@@ -359,7 +420,6 @@ public class UVCBrowser : EditorWindow
 		GUILayout.EndHorizontal();
 	}
 	
-	// TODO: Implement this (switch branches)
 	void DisplaySwitchBranchPopup(int index)
 	{
 		if (EditorUtility.DisplayDialog(
@@ -370,7 +430,42 @@ public class UVCBrowser : EditorWindow
 			BrowserUtility.OnButton_CheckoutBranch(this);
 		}
 	}
-
+	
+	void BeginDrag(bool vertical)
+	{
+		if (vertical)
+			drag1 = true;
+		else
+			drag2 = true;
+	}
+	
+	void CheckDrag()
+	{
+		if (drag1 || drag2)
+		{
+			if (Event.current.type == EventType.MouseUp)
+			{
+				drag1 = false;
+				drag2 = false;
+				return;
+			}
+			
+			if (Event.current.type == EventType.MouseDrag)
+			{
+				Vector2 delta = Event.current.delta;
+				if (drag1)
+				{
+					verticalResizeWidget1 = Mathf.Clamp(verticalResizeWidget1 += delta.y, 60, position.height - 180);
+				}
+				else if (drag2)
+				{
+					horizontalResizeWidget1 = Mathf.Clamp(horizontalResizeWidget1 += delta.x, 80, position.width - 80);
+				}
+				Repaint();
+			}
+		}
+	}
+	
 	public void OnProcessStart()
 	{
 		guiEnabled = false;
