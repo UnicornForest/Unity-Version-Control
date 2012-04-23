@@ -30,7 +30,7 @@ namespace ThinksquirrelSoftware.UnityVersionControl.UserInterface
 	/// </summary>
 	public enum BrowserViewMode
 	{
-		Default,
-		Mini
+		Default = 1,
+		Mini = 2
 	}
 }

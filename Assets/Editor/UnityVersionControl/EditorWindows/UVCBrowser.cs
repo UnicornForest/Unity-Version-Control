@@ -109,6 +109,27 @@ public class UVCBrowser : EditorWindow
 		vertWidgetStyle.fixedHeight = 0;
 	}
 	
+	void LoadSettings()
+	{
+		// View Mode
+		viewMode = (BrowserViewMode)EditorPrefs.GetInt("UnityVersionControl.BrowserViewMode", (int)BrowserViewMode.Default);
+		
+		// Staged Files Filter
+		stagedFilesFilter = (FileState)EditorPrefs.GetInt("UnityVersionControl.StagedFilesFilter",
+			(int)(FileState.Added | FileState.Copied | FileState.Deleted | FileState.Modified | FileState.Renamed | FileState.Unmerged | FileState.Unmodified | FileState.Untracked | FileState.Ignored));
+
+		// Working Tree Filter
+		workingTreeFilter = (FileState)EditorPrefs.GetInt("UnityVersionControl.WorkingTreeFilter",
+			(int)(FileState.Added | FileState.Copied | FileState.Deleted | FileState.Modified | FileState.Renamed | FileState.Unmerged | FileState.Untracked));
+		
+		// Diff Widget
+		horizontalResizeWidget1 = Mathf.Clamp(EditorPrefs.GetFloat("UnityVersionControl.HWidget1", position.width - 500), 80, position.width - 80);
+		
+		// Tree/Index Widget
+		horizontalResizeWidget1 = Mathf.Clamp(EditorPrefs.GetFloat("UnityVersionControl.VWidget1", (position.height - 220) / 2), 60, position.height - 180);
+			
+	}
+	
 	void OnGUI()
 	{	
 		GUI.enabled = guiEnabled;
@@ -117,12 +138,7 @@ public class UVCBrowser : EditorWindow
 		{
 			InitializeStyle();
 			
-			// Diff
-			horizontalResizeWidget1 = position.width - 500;
-			
-			// Tree/Index
-			verticalResizeWidget1 = (position.height - 220) / 2;
-		
+			LoadSettings();
 		}
 		
 		scrollPosition1 = GUILayout.BeginScrollView(scrollPosition1, GUILayout.Height(110));
@@ -142,7 +158,13 @@ public class UVCBrowser : EditorWindow
 					BrowserUtility.OnButton_Init(this);
 			}
 			
-			viewMode = (BrowserViewMode)EditorGUILayout.EnumPopup(viewMode);
+			var vm = (BrowserViewMode)EditorGUILayout.EnumPopup(viewMode);
+			
+			if (vm != viewMode)
+			{
+				viewMode = vm;
+				EditorPrefs.SetInt("UnityVersionControl.BrowserViewMode", (int)viewMode);
+			}
 		}
 		else
 		{
@@ -155,7 +177,13 @@ public class UVCBrowser : EditorWindow
 			if (GUILayout.Button("Initialize"))
 				BrowserUtility.OnButton_Init(this);
 			
-			viewMode = (BrowserViewMode)EditorGUILayout.EnumPopup(viewMode);
+			var vm = (BrowserViewMode)EditorGUILayout.EnumPopup(viewMode);
+			
+			if (vm != viewMode)
+			{
+				viewMode = vm;
+				EditorPrefs.SetInt("UnityVersionControl.BrowserViewMode", (int)viewMode);
+			}
 		}
 
 		GUILayout.EndHorizontal();
@@ -524,6 +552,8 @@ public class UVCBrowser : EditorWindow
 			{
 				drag1 = false;
 				drag2 = false;
+				EditorPrefs.SetFloat("UnityVersionControl.VWidget1", verticalResizeWidget1);
+				EditorPrefs.SetFloat("UnityVersionControl.HWidget1", horizontalResizeWidget1);
 				Repaint();
 				return;
 			}
@@ -537,6 +567,8 @@ public class UVCBrowser : EditorWindow
 				{
 					drag1 = false;
 					drag2 = false;
+					EditorPrefs.SetFloat("UnityVersionControl.VWidget1", verticalResizeWidget1);
+					EditorPrefs.SetFloat("UnityVersionControl.HWidget1", horizontalResizeWidget1);
 					Repaint();
 					return;
 				}
