@@ -109,7 +109,7 @@ namespace ThinksquirrelSoftware.UnityVersionControl.Tests
 		[MenuItem ("Version Control/Debug/Other Tests/Re-open Project")]
 		static void OtherTest_ReopenProject()
 		{	
-			EditorApplication.OpenProject(Application.dataPath.Substring(0, Application.dataPath.Length - 7));	
+			VersionControl.RestartUnity();
 		}
 		
 		static void OnProcessExit(object sender, System.EventArgs e)

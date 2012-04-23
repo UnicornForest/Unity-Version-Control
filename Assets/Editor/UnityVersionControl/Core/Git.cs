@@ -406,5 +406,17 @@ namespace ThinksquirrelSoftware.UnityVersionControl.Core
 			
 			return RunGit(f.ToString(), exitEventHandler);
 		}
+		
+		internal static Process Checkout(System.EventHandler exitEventHandler, string item, bool force)
+		{
+			if (force)
+			{
+				return RunGit("checkout -f " + item, exitEventHandler);
+			}
+			else
+			{
+				return RunGit("checkout " + item, exitEventHandler);
+			}
+		}
 	}
 }

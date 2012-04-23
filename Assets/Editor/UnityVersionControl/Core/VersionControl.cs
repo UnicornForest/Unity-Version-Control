@@ -22,6 +22,8 @@
 //    You should have received a copy of the GNU General Public License
 //    along with Unity Version Control.  If not, see <http://www.gnu.org/licenses/>.
 //
+using UnityEditor;
+using UnityEngine;
 using System.Diagnostics;
 using System.Text;
 
@@ -53,6 +55,14 @@ namespace ThinksquirrelSoftware.UnityVersionControl.Core
 			{
 				mVersionControlType = value;
 			}
+		}
+		
+		/// <summary>
+		/// Restarts Unity. Use this when checking out a branch/tag.
+		/// </summary>
+		public static void RestartUnity()
+		{
+			EditorApplication.OpenProject(Application.dataPath.Substring(0, Application.dataPath.Length - 7));
 		}
 		
 		/// <summary>
@@ -242,12 +252,30 @@ namespace ThinksquirrelSoftware.UnityVersionControl.Core
 		/// <summary>
 		/// Commits a change. Takes a string literal as the message.
 		/// </summary>
+		/// TODO: Implement Hg
 		public static Process Commit(System.EventHandler exitEventHandler, string messageStringLiteral, bool amend, params VCFile[] files)
 		{
 			switch(mVersionControlType)
 			{
 			case VersionControlType.Git:
 				return Git.Commit(exitEventHandler, messageStringLiteral, amend, files);
+			case VersionControlType.Hg:
+				throw new System.NotImplementedException();
+			}
+			
+			return null;
+		}
+		
+		/// <summary>
+		/// Checkout a branch, tag, or commit.
+		/// </summary>
+		/// TODO: Implement Hg
+		public static Process Checkout(System.EventHandler exitEventHandler, string item, bool force)
+		{
+			switch(mVersionControlType)
+			{
+			case VersionControlType.Git:
+				return Git.Checkout(exitEventHandler, item, force);
 			case VersionControlType.Hg:
 				throw new System.NotImplementedException();
 			}

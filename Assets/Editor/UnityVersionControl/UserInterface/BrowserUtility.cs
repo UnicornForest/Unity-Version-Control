@@ -268,6 +268,15 @@ namespace ThinksquirrelSoftware.UnityVersionControl.UserInterface
 		}
 		
 		/// <summary>
+		/// Raises the Checkout Branch Button event.
+		/// </summary>
+		public static void OnButton_CheckoutBranch(UVCBrowser browser)
+		{
+			browser.OnProcessStart();
+			UVCProcessPopup.Init(VersionControl.Checkout(CommandLine.EmptyHandler, mLocalBranchNames[mLocalBranchIndex], true), false, true, OnCheckoutBranch, true);
+		}
+		
+		/// <summary>
 		/// Raises the Reset Button event.
 		/// </summary>
 		/// TODO: Implement button
@@ -699,7 +708,11 @@ namespace ThinksquirrelSoftware.UnityVersionControl.UserInterface
 			if (fileList.Count > 0)
 				VersionControl.GetDiff(OnGetDiff, fileList.ToArray());
 		}
-
+		
+		private static void OnCheckoutBranch(int exitCode, string stdout, string stderr)
+		{
+			VersionControl.RestartUnity();
+		}
 		#endregion
 	}
 }

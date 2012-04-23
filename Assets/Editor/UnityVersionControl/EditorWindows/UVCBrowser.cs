@@ -367,7 +367,7 @@ public class UVCBrowser : EditorWindow
 			            "This will CLEAN the project. Any uncommited changes will be irretrievably lost! Are you sure you want to continue?", "Ok", "Cancel"))
 		{
 			BrowserUtility.localBranchIndex = index;
-			// Switch branches - put this function in BrowserUtility.
+			BrowserUtility.OnButton_CheckoutBranch(this);
 		}
 	}
 
