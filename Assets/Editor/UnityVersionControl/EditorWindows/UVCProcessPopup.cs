@@ -25,6 +25,7 @@
 using UnityEditor;
 using UnityEngine;
 using ThinksquirrelSoftware.UnityVersionControl.Core;
+using ThinksquirrelSoftware.UnityVersionControl.Helpers;
 using System.Text;
 
 /// <summary>
@@ -45,6 +46,7 @@ public class UVCProcessPopup : EditorWindow
 	private bool exited = false;
 	private StringBuilder output = new StringBuilder();
 	private StringBuilder error = new StringBuilder();
+	private StringBuilder outerr = new StringBuilder();
 	private static GUIStyle labelStyle;
 	
 	/// <summary>
@@ -68,8 +70,9 @@ public class UVCProcessPopup : EditorWindow
 	/// </param>
 	public static void Init(System.Diagnostics.Process process, bool exitOnCompletion, bool logErrors, System.Action<int, string, string> exitCallback, bool unityWorkaround)
 	{
-		labelStyle = new GUIStyle(EditorStyles.textField);
+		labelStyle = new GUIStyle(EditorStyles.label);
 		labelStyle.wordWrap = true;
+		
 		var window = EditorWindow.CreateInstance<UVCProcessPopup>();
 		window.title = "Running Process";
 		window.process = process;
@@ -93,7 +96,7 @@ public class UVCProcessPopup : EditorWindow
 	
 	void OnEnable()
 	{
-		this.minSize = new Vector2(400, 200);
+		this.minSize = new Vector2(600, 200);
 		position = new Rect(position.x, position.y, this.minSize.x, this.minSize.y);
 	}
 	
@@ -101,7 +104,17 @@ public class UVCProcessPopup : EditorWindow
 	{
 		if (process != null)
 		{
-			output.Append(process.StandardOutput.ReadToEnd());
+			string o = process.StandardOutput.ReadToEnd();
+			string e = process.StandardError.ReadToEnd();
+			
+			output.Append(o);
+			error.Append(e);
+			
+			if (o.Length > 0)
+				outerr.Append("\aFFFFFFFF").Append(o);
+			
+			if (e.Length > 0)
+				outerr.Append("\aFF0000FF").Append(e);
 			
 			if (!exited)
 			{
@@ -111,9 +124,7 @@ public class UVCProcessPopup : EditorWindow
 					cancelString = "Done";
 					
 					if (logErrors)
-					{
-						error.Append(process.StandardError.ReadToEnd());
-							
+					{		
 						if (process.ExitCode != 0)
 						{
 							exitOnCompletion = false;
@@ -133,15 +144,13 @@ public class UVCProcessPopup : EditorWindow
 	{
 		if (process != null)
 		{
-			EditorGUILayout.SelectableLabel(command);
-			
 			scrollPosition = GUILayout.BeginScrollView(scrollPosition);
 			
-			EditorGUILayout.SelectableLabel(output.ToString(), labelStyle, GUILayout.ExpandHeight(true));
-			GUI.contentColor = Color.red;
-			EditorGUILayout.SelectableLabel(error.ToString(), labelStyle, GUILayout.ExpandHeight(true));
-			GUI.contentColor = Color.white;
+			EditorGUILayout.SelectableLabel(command, labelStyle, GUILayout.ExpandHeight(true));
 			
+			GUIHelpers.FormattedLabel(outerr.ToString(), labelStyle.font, labelStyle.font, labelStyle.font, TextAlignment.Left);
+			
+			GUILayout.FlexibleSpace();
 			GUILayout.EndScrollView();
 			
 			if (exited)
