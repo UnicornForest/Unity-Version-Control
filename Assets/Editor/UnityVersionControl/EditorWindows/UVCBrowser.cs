@@ -370,8 +370,14 @@ public class UVCBrowser : EditorWindow
 		
 		if (viewMode != BrowserViewMode.ArtistMode)
 		{
+			GUI.enabled = false;
+			GUI.color *= .5f;
+			
 			if (GUILayout.Button("Checkout", GUILayout.Width(70), GUILayout.Height(60)))
 				BrowserUtility.OnButton_Checkout(this);
+			
+			GUI.color = Color.white;
+			GUI.enabled = guiEnabled;
 		}
 				
 		if (GUILayout.Button("Reset", GUILayout.Width(70), GUILayout.Height(60)))
@@ -403,6 +409,9 @@ public class UVCBrowser : EditorWindow
 		
 		if (viewMode != BrowserViewMode.ArtistMode)
 		{
+			GUI.enabled = false;
+			GUI.color *= .5f;
+			
 			if (GUILayout.Button("Branch", GUILayout.Width(70), GUILayout.Height(60)))
 				BrowserUtility.OnButton_Branch(this);
 			
@@ -411,6 +420,9 @@ public class UVCBrowser : EditorWindow
 			
 			if (GUILayout.Button("Tag", GUILayout.Width(70), GUILayout.Height(60)))
 				BrowserUtility.OnButton_Tag(this);
+			
+			GUI.color = Color.white;
+			GUI.enabled = guiEnabled;
 		}
 		
 		GUILayout.FlexibleSpace();
