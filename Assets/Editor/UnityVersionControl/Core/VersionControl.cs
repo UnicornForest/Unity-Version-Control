@@ -317,5 +317,22 @@ namespace ThinksquirrelSoftware.UnityVersionControl.Core
 			return null;
 		}
 		
+		/// <summary>
+		/// Push the specified branches to the specified remote.
+		/// </summary>
+		/// TODO: Implement Hg
+		public static Process Push(System.EventHandler exitEventHandler, string remoteName, string[] localBranches, string[] remoteBranches, bool pushAllTags)
+		{
+			switch(mVersionControlType)
+			{
+			case VersionControlType.Git:
+				return Git.Push(exitEventHandler, remoteName, localBranches, remoteBranches, pushAllTags);
+			case VersionControlType.Hg:
+				throw new System.NotImplementedException();
+			}
+			
+			return null;
+		}
+		
 	}
 }

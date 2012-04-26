@@ -471,5 +471,22 @@ namespace ThinksquirrelSoftware.UnityVersionControl.Core
 			
 			return RunGit(sb.ToString(), exitEventHandler);
 		}
+		
+		internal static Process Push(System.EventHandler exitEventHandler, string remoteName, string[] localBranches, string[] remoteBranches, bool pushAllTags)
+		{
+			var sb = new StringBuilder().Append("push -v ");
+			
+			if (pushAllTags)
+				sb.Append("--tags ");
+			
+			sb.Append(remoteName).Append(' ');
+			
+			for(int i = 0; i < localBranches.Length; i++)
+			{
+				sb.Append(localBranches[i]).Append(':').Append(remoteBranches[i]).Append(' ');
+			}
+			
+			return RunGit(sb.ToString(0, sb.Length - 1), exitEventHandler);		
+		}
 	}
 }

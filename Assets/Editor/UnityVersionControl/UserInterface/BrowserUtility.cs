@@ -368,7 +368,6 @@ namespace ThinksquirrelSoftware.UnityVersionControl.UserInterface
 		/// <summary>
 		/// Raises the Fetch Button event.
 		/// </summary>
-		/// TODO: Implement button
 		public static void OnButton_Fetch(UVCBrowser browser)
 		{
 			browser.OnProcessStart();
@@ -378,7 +377,6 @@ namespace ThinksquirrelSoftware.UnityVersionControl.UserInterface
 		/// <summary>
 		/// Raises the Pull Button event.
 		/// </summary>
-		/// TODO: Implement button
 		public static void OnButton_Pull(UVCBrowser browser)
 		{
 			browser.OnProcessStart();
@@ -388,9 +386,10 @@ namespace ThinksquirrelSoftware.UnityVersionControl.UserInterface
 		/// <summary>
 		/// Raises the Push Button event.
 		/// </summary>
-		/// TODO: Implement button
 		public static void OnButton_Push(UVCBrowser browser)
 		{
+			browser.OnProcessStart();
+			UVCPushPopup.Init(browser);
 		}
 		
 		/// <summary>

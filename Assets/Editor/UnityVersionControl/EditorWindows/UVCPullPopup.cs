@@ -62,7 +62,8 @@ public class UVCPullPopup : EditorWindow
 	
 	void OnEnable()
 	{
-		this.minSize = new Vector2(550, 200);
+		this.minSize = new Vector2(550, 220);
+		this.maxSize = new Vector2(550, 220);
 		RefreshBranches();
 		SetCurrentBranch();
 	}

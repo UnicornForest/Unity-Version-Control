@@ -374,15 +374,12 @@ public class UVCBrowser : EditorWindow
 				BrowserUtility.OnButton_Add(this);
 			
 			GUI.enabled = guiEnabled && BrowserUtility.anyFileSelected;
-		}
 		
-		if (GUILayout.Button("Remove", GUILayout.Width(70), GUILayout.Height(60)))
-			BrowserUtility.OnButton_Remove(this);
+			if (GUILayout.Button("Remove", GUILayout.Width(70), GUILayout.Height(60)))
+				BrowserUtility.OnButton_Remove(this);
+			
+			GUI.enabled = guiEnabled;
 		
-		GUI.enabled = guiEnabled;
-		
-		if (viewMode != BrowserViewMode.Mini)
-		{
 			if (GUILayout.Button("Fetch", GUILayout.Width(70), GUILayout.Height(60)))
 				BrowserUtility.OnButton_Fetch(this);
 		}
