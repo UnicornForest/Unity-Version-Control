@@ -103,8 +103,8 @@ public class UVCCommitPopup : EditorWindow
 			
 			GUILayout.Space(6);
 			
-			showOutput = GUILayout.Toggle(showOutput, "Show output");
 			amend = GUILayout.Toggle(amend, "Amend previous commit");
+			showOutput = GUILayout.Toggle(showOutput, "Show output");
 			
 			GUILayout.BeginHorizontal();
 			GUILayout.FlexibleSpace();
