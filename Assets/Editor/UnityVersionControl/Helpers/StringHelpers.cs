@@ -76,5 +76,39 @@ namespace ThinksquirrelSoftware.UnityVersionControl.Helpers
 			bytes[i / 2] = System.Convert.ToByte(hexString.Substring(i, 2), 16);
 			return Encoding.Unicode.GetString(bytes);
 		}
+		
+		/// <summary>
+		/// Converts a hex string to an integer.
+		/// </summary>
+		public static int HexStringToInt( string hexString )
+		{
+		    int value = 0;
+		    int digitValue = 1;
+		    hexString = hexString.ToUpper();
+		    char[] hexDigits = hexString.ToCharArray(0, hexString.Length);
+		
+		    for ( int i = hexString.Length - 1; i >= 0; i-- )
+			{
+		        int digit = 0;
+		        if ( hexDigits[i] >= '0' && hexDigits[i] <= '9' )
+				{
+		            digit = hexDigits[i] - '0';
+		        }
+				else if ( hexDigits[i] >= 'A' && hexDigits[i] <= 'F' )
+				{
+		            digit = hexDigits[i] - 'A' + 10;                
+		        }
+				else
+				{
+		            // Not a hex string
+		            return -1;
+		        }
+		
+		        value += digit * digitValue;
+		        digitValue *= 16;
+		    }
+		
+		    return value;
+		}
 	}
 }
