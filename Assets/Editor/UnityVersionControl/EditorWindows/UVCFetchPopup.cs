@@ -57,7 +57,8 @@ public class UVCFetchPopup : EditorWindow
 	
 	void OnEnable()
 	{
-		this.minSize = new Vector2(350, 200);
+		this.minSize = new Vector2(350, 150);
+		this.maxSize = new Vector2(350, 150);
 	}
 	
 	void OnGUI()
