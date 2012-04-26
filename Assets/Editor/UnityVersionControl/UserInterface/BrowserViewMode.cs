@@ -26,11 +26,11 @@
 namespace ThinksquirrelSoftware.UnityVersionControl.UserInterface
 {
 	/// <summary>
-	/// Browser view mode. Mini mode is designed for artists, and hides extra functionality.
+	/// Browser view mode. Artist mode hides extra functionality.
 	/// </summary>
 	public enum BrowserViewMode
 	{
 		Default = 1,
-		Mini = 2
+		ArtistMode = 2
 	}
 }

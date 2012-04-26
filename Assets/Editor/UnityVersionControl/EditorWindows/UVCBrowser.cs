@@ -152,7 +152,7 @@ public class UVCBrowser : EditorWindow
 			
 			GUILayout.FlexibleSpace();
 			
-			if (viewMode != BrowserViewMode.Mini)
+			if (viewMode != BrowserViewMode.ArtistMode)
 			{
 				if (GUILayout.Button("Reinitialize"))
 					BrowserUtility.OnButton_Init(this);
@@ -203,7 +203,7 @@ public class UVCBrowser : EditorWindow
 		mainScrollPosition = GUILayout.BeginScrollView(mainScrollPosition);
 		
 		GUILayout.BeginHorizontal();
-		if (viewMode != BrowserViewMode.Mini)
+		if (viewMode != BrowserViewMode.ArtistMode)
 		{
 			GUILayout.BeginVertical(GUILayout.Width(horizontalResizeWidget1 - 3));
 		}
@@ -213,7 +213,7 @@ public class UVCBrowser : EditorWindow
 		}
 		
 		#region First scroll area - Staged files (git)
-		if (VersionControl.versionControlType == VersionControlType.Git && viewMode != BrowserViewMode.Mini)
+		if (VersionControl.versionControlType == VersionControlType.Git && viewMode != BrowserViewMode.ArtistMode)
 		{
 			GUILayout.BeginVertical(GUILayout.Height(verticalResizeWidget1 - 3));
 			
@@ -250,7 +250,7 @@ public class UVCBrowser : EditorWindow
 		#endregion
 		
 		#region Resize widget
-		if (VersionControl.versionControlType == VersionControlType.Git && viewMode != BrowserViewMode.Mini)
+		if (VersionControl.versionControlType == VersionControlType.Git && viewMode != BrowserViewMode.ArtistMode)
 		{
 			GUI.backgroundColor = new Color(.5f, .5f, .5f, 1);
 			if (GUILayout.RepeatButton("", EditorStyles.toolbarButton, GUILayout.Height(6), GUILayout.ExpandWidth(true)))
@@ -263,7 +263,7 @@ public class UVCBrowser : EditorWindow
 		#endregion
 		
 		#region Second scroll area - Working tree
-		if (VersionControl.versionControlType == VersionControlType.Git && viewMode != BrowserViewMode.Mini)
+		if (VersionControl.versionControlType == VersionControlType.Git && viewMode != BrowserViewMode.ArtistMode)
 		{
 			GUILayout.BeginVertical(GUILayout.Height(position.height - 126 - verticalResizeWidget1 - 3));
 		}
@@ -280,7 +280,7 @@ public class UVCBrowser : EditorWindow
 		GUILayout.BeginHorizontal();
 		GUI.backgroundColor *= .5f;
 		GUILayout.Label("State", EditorStyles.toolbarButton, GUILayout.Width(80));
-		if (viewMode != BrowserViewMode.Mini)
+		if (viewMode != BrowserViewMode.ArtistMode)
 		{
 			GUILayout.Label("File", EditorStyles.toolbarButton, GUILayout.Width(300));
 		}
@@ -299,7 +299,7 @@ public class UVCBrowser : EditorWindow
 		
 		GUILayout.EndVertical();
 		GUILayout.EndScrollView();
-		if (VersionControl.versionControlType == VersionControlType.Git && viewMode != BrowserViewMode.Mini)
+		if (VersionControl.versionControlType == VersionControlType.Git && viewMode != BrowserViewMode.ArtistMode)
 		{
 			GUILayout.EndVertical();
 		}
@@ -308,7 +308,7 @@ public class UVCBrowser : EditorWindow
 		GUILayout.EndVertical();
 		
 		#region Resize widget
-		if (viewMode != BrowserViewMode.Mini)
+		if (viewMode != BrowserViewMode.ArtistMode)
 		{
 			GUI.backgroundColor *= .5f;
 			if (GUILayout.RepeatButton("", vertWidgetStyle, GUILayout.Width(4), GUILayout.ExpandHeight(true)))
@@ -321,7 +321,7 @@ public class UVCBrowser : EditorWindow
 		#endregion
 		
 		#region 3rd scroll area - Diff
-		if (viewMode != BrowserViewMode.Mini)
+		if (viewMode != BrowserViewMode.ArtistMode)
 		{
 			GUILayout.BeginVertical(GUILayout.Width(position.width - horizontalResizeWidget1));
 			GUILayout.Label("Diff", EditorStyles.toolbarButton, GUILayout.ExpandWidth(true));
@@ -349,7 +349,7 @@ public class UVCBrowser : EditorWindow
 	
 	void DisplayButtons()
 	{	
-		if (viewMode == BrowserViewMode.Mini)
+		if (viewMode == BrowserViewMode.ArtistMode)
 		{
 			GUILayout.FlexibleSpace();
 		}
@@ -357,7 +357,7 @@ public class UVCBrowser : EditorWindow
 		if (GUILayout.Button("Commit", GUILayout.Width(70), GUILayout.Height(60)))
 			BrowserUtility.OnButton_Commit(this);
 		
-		if (viewMode != BrowserViewMode.Mini)
+		if (viewMode != BrowserViewMode.ArtistMode)
 		{
 			if (GUILayout.Button("Checkout", GUILayout.Width(70), GUILayout.Height(60)))
 				BrowserUtility.OnButton_Checkout(this);
@@ -366,7 +366,7 @@ public class UVCBrowser : EditorWindow
 		if (GUILayout.Button("Reset", GUILayout.Width(70), GUILayout.Height(60)))
 			BrowserUtility.OnButton_Reset(this);
 		
-		if (viewMode != BrowserViewMode.Mini)
+		if (viewMode != BrowserViewMode.ArtistMode)
 		{
 			GUI.enabled = guiEnabled && BrowserUtility.workingTreeSelected;
 			
@@ -390,7 +390,7 @@ public class UVCBrowser : EditorWindow
 		if (GUILayout.Button("Push", GUILayout.Width(70), GUILayout.Height(60)))
 			BrowserUtility.OnButton_Push(this);
 		
-		if (viewMode != BrowserViewMode.Mini)
+		if (viewMode != BrowserViewMode.ArtistMode)
 		{
 			if (GUILayout.Button("Branch", GUILayout.Width(70), GUILayout.Height(60)))
 				BrowserUtility.OnButton_Branch(this);
@@ -404,7 +404,7 @@ public class UVCBrowser : EditorWindow
 		
 		GUILayout.FlexibleSpace();
 		
-		if (viewMode != BrowserViewMode.Mini)
+		if (viewMode != BrowserViewMode.ArtistMode)
 		{
 			if (GUILayout.Button("Settings", GUILayout.Width(70), GUILayout.Height(60)))	
 				BrowserUtility.OnButton_Settings(this);
@@ -441,7 +441,7 @@ public class UVCBrowser : EditorWindow
 		string filePathString = !string.IsNullOrEmpty(file.path2) ? file.path2 : file.path1;
 		bool t1 = GUILayout.Toggle(file.selected, statusString, selectionStyle, GUILayout.Width(75));
 		bool t2 = false;
-		if (viewMode != BrowserViewMode.Mini)
+		if (viewMode != BrowserViewMode.ArtistMode)
 		{
 			string fileNameString = !string.IsNullOrEmpty(file.name2) ? file.name2 : file.name1;
 			t2 = GUILayout.Toggle(file.selected, fileNameString, selectionStyle, GUILayout.Width(295));
@@ -451,7 +451,7 @@ public class UVCBrowser : EditorWindow
 		
 		GUI.backgroundColor = Color.white;
 		
-		if (viewMode != BrowserViewMode.Mini && t2 != file.selected)
+		if (viewMode != BrowserViewMode.ArtistMode && t2 != file.selected)
 		{
 			BrowserUtility.ValidateSelection(file, t2);
 		}
