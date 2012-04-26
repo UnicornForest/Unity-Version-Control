@@ -46,6 +46,8 @@ public class UVCPushPopup : EditorWindow
 	private bool pushAllTags = true;
 	private bool showOutput;
 	
+	private Vector2 scrollVector;
+	
 	/// <summary>
 	/// Initialize the pull popup.
 	/// </summary>
@@ -62,8 +64,7 @@ public class UVCPushPopup : EditorWindow
 	
 	void OnEnable()
 	{
-		this.minSize = new Vector2(600, 220);
-		this.maxSize = new Vector2(600, 220);
+		this.minSize = new Vector2(600, 300);
 		
 		remoteBranchIndices = new int[BrowserUtility.localBranchNames.Length];
 		pushToggles = new bool[remoteBranchIndices.Length];
@@ -136,6 +137,8 @@ public class UVCPushPopup : EditorWindow
 			GUILayout.FlexibleSpace();
 			GUILayout.EndHorizontal();
 			
+			scrollVector = GUILayout.BeginScrollView(scrollVector, GUILayout.ExpandHeight(true));
+			
 			for(int i = 0; i < remoteBranchIndices.Length; i++)
 			{
 				GUILayout.BeginHorizontal();
@@ -148,6 +151,8 @@ public class UVCPushPopup : EditorWindow
 				GUILayout.FlexibleSpace();
 				GUILayout.EndHorizontal();
 			}
+			
+			GUILayout.EndScrollView();
 			
 			GUILayout.Space(12);
 			
