@@ -408,12 +408,12 @@ public class UVCBrowser : EditorWindow
 			BrowserUtility.OnButton_Push(this);
 		
 		if (viewMode != BrowserViewMode.ArtistMode)
-		{
-			GUI.enabled = false;
-			GUI.color *= .5f;
-			
+		{	
 			if (GUILayout.Button("Branch", GUILayout.Width(70), GUILayout.Height(60)))
 				BrowserUtility.OnButton_Branch(this);
+			
+			GUI.enabled = false;
+			GUI.color *= .5f;
 			
 			if (GUILayout.Button("Merge", GUILayout.Width(70), GUILayout.Height(60)))
 				BrowserUtility.OnButton_Merge(this);
@@ -558,13 +558,13 @@ public class UVCBrowser : EditorWindow
 		{
 			if (VersionControl.versionControlType == VersionControlType.Git)
 			{
-				
-				bool showStagedFilesTemp = GUILayout.Toggle(showStagedFiles, "S", EditorStyles.toolbarButton, GUILayout.Width(40));
+				string stagedString = BrowserUtility.stagedFiles.Count > 0 ? "S (" + BrowserUtility.stagedFiles.Count + ")" : "S";
+				bool showStagedFilesTemp = GUILayout.Toggle(showStagedFiles, stagedString, EditorStyles.toolbarButton, GUILayout.Width(40));
 				
 				if (showStagedFilesTemp != showStagedFiles)
 				{
 					showStagedFiles = showStagedFilesTemp;
-					EditorPrefs.SetBool("UnityVersionControl.ShowDiff", showStagedFiles);
+					EditorPrefs.SetBool("UnityVersionControl.ShowStagedFiles", showStagedFiles);
 				}
 			}
 			bool showDiffTemp = GUILayout.Toggle(showDiff, "D", EditorStyles.toolbarButton, GUILayout.Width(40));
