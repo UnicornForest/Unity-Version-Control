@@ -140,9 +140,11 @@ public class UVCPushPopup : EditorWindow
 			{
 				GUILayout.BeginHorizontal();
 				GUILayout.FlexibleSpace();
-				pushToggles[i] = GUILayout.Toggle(pushToggles[i], "", GUILayout.Width(50));
+				GUILayout.Space(20);
+				pushToggles[i] = GUILayout.Toggle(pushToggles[i], "", GUILayout.Width(30));
 				GUILayout.Label(BrowserUtility.localBranchNames[i], GUILayout.Width(250));
-				remoteBranchIndices[i] = EditorGUILayout.Popup(remoteBranchIndices[i], remoteBranches, GUILayout.Width(250));
+				GUILayout.Space(10);
+				remoteBranchIndices[i] = EditorGUILayout.Popup(remoteBranchIndices[i], remoteBranches, GUILayout.Width(240));
 				GUILayout.FlexibleSpace();
 				GUILayout.EndHorizontal();
 			}
