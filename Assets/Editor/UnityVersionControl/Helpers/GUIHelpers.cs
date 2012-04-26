@@ -31,6 +31,135 @@ namespace ThinksquirrelSoftware.UnityVersionControl.Helpers
 {
 	public static class GUIHelpers
 	{
+		private static GUIStyle vertWidgetStyle;
+		
+		static GUIHelpers()
+		{
+			vertWidgetStyle = new GUIStyle(EditorStyles.toolbarButton);
+			vertWidgetStyle.fixedHeight = 0;
+		}
+		
+		/// <summary>
+		/// Draws a resize widget.
+		/// </summary>
+		/// <returns>
+		/// The new widget state (true if resizing).
+		/// </returns>
+		/// <param name='state'>
+		/// The current widget state.
+		/// </param>
+		/// <param name='resizeValue'>
+		/// The current resize value.
+		/// </param>
+		/// <param name='minValue'>
+		/// The minimum resize value.
+		/// </param>
+		/// <param name='maxValue'>
+		/// The maximum resize value.
+		/// </param>
+		/// <param name='size'>
+		/// The widget size.
+		/// </param>
+		/// <param name='resizeVertical'>
+		/// If set to <c>true</c>, draw a vertical resize widget.
+		/// </param>
+		/// <param name='resizeArea'>
+		/// The area to resize within.
+		/// </param>
+		public static bool ResizeWidget(
+			bool state, 
+			ref float resizeValue, float minValue, float maxValue, float size, 
+			bool resizeVertical, Rect resizeArea, 
+			EditorWindow editorWindow)
+		{
+			Color oldColor = GUI.backgroundColor;
+			
+			GUI.backgroundColor = new Color(.5f, .5f, .5f, 1);
+			bool s = state;
+			
+			// Detect a mouse up event
+			if (Event.current.type == EventType.MouseUp)
+			{
+				s = false;
+			}
+			
+			// Draw the widget
+			if (resizeVertical)
+			{
+				if (GUILayout.RepeatButton("", EditorStyles.toolbarButton, GUILayout.Height(size), GUILayout.ExpandWidth(true)))
+				{
+					s = true;
+				}
+				
+				EditorGUIUtility.AddCursorRect (GUILayoutUtility.GetLastRect(), MouseCursor.ResizeVertical);
+			}
+			else
+			{
+				if (GUILayout.RepeatButton("", vertWidgetStyle, GUILayout.Width(size), GUILayout.ExpandHeight(true)))
+				{
+					s = true;
+				}
+				
+				EditorGUIUtility.AddCursorRect (GUILayoutUtility.GetLastRect(), MouseCursor.ResizeHorizontal);
+			}
+			
+			GUI.backgroundColor = oldColor;
+			
+			// Process events
+			if (s)
+			{
+				if (Event.current.type == EventType.MouseDrag)
+				{
+					Vector2 delta = Event.current.delta;
+					Vector2 pos = Event.current.mousePosition;
+					
+					if (!resizeArea.Contains(pos))
+					{
+						s = false;
+						if (editorWindow)
+							editorWindow.Repaint();
+						return s;
+					}
+					
+					if (resizeVertical)
+					{
+						resizeValue = Mathf.Clamp(resizeValue += delta.y, minValue, maxValue);
+						EditorGUIUtility.AddCursorRect (resizeArea, MouseCursor.ResizeVertical);
+						if (editorWindow)
+							editorWindow.Repaint();
+					}
+					else
+					{
+						resizeValue = Mathf.Clamp(resizeValue += delta.x, minValue, maxValue);
+						EditorGUIUtility.AddCursorRect (resizeArea, MouseCursor.ResizeHorizontal);
+						if (editorWindow)
+							editorWindow.Repaint();
+					}
+					
+				}	
+			}
+			
+			return s;
+		}
+		
+		/// <summary>
+		/// Draws a formatted label.
+		/// </summary>
+		/// <param name='text'>
+		/// The text to format.
+		/// </param>
+		/// <param name='normalFont'>
+		/// Normal font.
+		/// </param>
+		/// <param name='boldFont'>
+		/// Bold font.
+		/// </param>
+		/// <param name='italicFont'>
+		/// Italic font.
+		/// </param>
+		/// <param name='alignment'>
+		/// Alignment.
+		/// </param>
 		public static void FormattedLabel(string text, Font normalFont, Font boldFont, Font italicFont, TextAlignment alignment )
 		{
 		    int     i1 = 0, i2 = 0;

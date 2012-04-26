@@ -231,7 +231,10 @@ namespace ThinksquirrelSoftware.UnityVersionControl.UserInterface
 		{
 			mFrameCount = 0;
 			mRepositoryLocation = Git.RepositoryLocation();
-			mRepositoryShortName = mRepositoryLocation.Substring(mRepositoryLocation.LastIndexOf(System.IO.Path.DirectorySeparatorChar) + 1);
+			if (!string.IsNullOrEmpty(mRepositoryLocation))
+			{
+				mRepositoryShortName = mRepositoryLocation.Substring(mRepositoryLocation.LastIndexOf(System.IO.Path.DirectorySeparatorChar) + 1);
+			}
 		}
 		
 		/// <summary>
