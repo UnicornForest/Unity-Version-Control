@@ -45,6 +45,7 @@ namespace ThinksquirrelSoftware.UnityVersionControl.UserInterface
 		
 		/// Repository location
 		private static string mRepositoryLocation;
+		private static string mRepositoryShortName;
 		
 		// Branches
 		private static VCBranch[] mBranches;
@@ -81,6 +82,13 @@ namespace ThinksquirrelSoftware.UnityVersionControl.UserInterface
 			get
 			{
 				return mRepositoryLocation;
+			}
+		}
+		public static string repositoryShortName
+		{
+			get
+			{
+				return mRepositoryShortName;
 			}
 		}
 		public static VCBranch[] branches
@@ -223,6 +231,7 @@ namespace ThinksquirrelSoftware.UnityVersionControl.UserInterface
 		{
 			mFrameCount = 0;
 			mRepositoryLocation = Git.RepositoryLocation();
+			mRepositoryShortName = mRepositoryLocation.Substring(mRepositoryLocation.LastIndexOf(System.IO.Path.DirectorySeparatorChar) + 1);
 		}
 		
 		/// <summary>

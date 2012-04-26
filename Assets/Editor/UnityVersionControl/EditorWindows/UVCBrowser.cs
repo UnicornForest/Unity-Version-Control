@@ -148,7 +148,7 @@ public class UVCBrowser : EditorWindow
 		
 		if (!string.IsNullOrEmpty(BrowserUtility.repositoryLocation))
 		{
-			GUILayout.Label("Project: " + BrowserUtility.repositoryLocation);
+			GUILayout.Label("Project: " + BrowserUtility.repositoryShortName);
 			
 			GUILayout.FlexibleSpace();
 			
@@ -346,6 +346,11 @@ public class UVCBrowser : EditorWindow
 	
 	void DisplayButtons()
 	{	
+		if (viewMode == BrowserViewMode.Mini)
+		{
+			GUILayout.FlexibleSpace();
+		}
+		
 		if (GUILayout.Button("Commit", GUILayout.Width(70), GUILayout.Height(60)))
 			BrowserUtility.OnButton_Commit(this);
 		
@@ -602,6 +607,8 @@ public class UVCBrowser : EditorWindow
 	
 	public void OnProcessStop(int errorCode, string stdout, string stderr)
 	{
+		guiEnabled = true;
+		Repaint();
 		if (errorCode == 0)
 		{
 			BrowserUtility.stagedFiles.Clear();
