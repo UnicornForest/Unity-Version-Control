@@ -222,7 +222,9 @@ namespace ThinksquirrelSoftware.UnityVersionControl.Helpers
 		    }
 		    GUILayout.EndHorizontal();
 		    GUILayout.FlexibleSpace();
-		    GUILayout.EndVertical();       
+		    GUILayout.EndVertical();
+			
+			GUI.contentColor = originalColor;
 		
 		}		
 	}

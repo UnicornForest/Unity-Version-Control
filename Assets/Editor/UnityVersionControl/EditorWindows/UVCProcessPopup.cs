@@ -146,15 +146,22 @@ public class UVCProcessPopup : EditorWindow
 		{
 			scrollPosition = GUILayout.BeginScrollView(scrollPosition);
 			
-			EditorGUILayout.SelectableLabel(command, labelStyle, GUILayout.ExpandHeight(true));
+			GUILayout.BeginVertical();
+			
+			EditorGUILayout.SelectableLabel(command, labelStyle, GUILayout.MinHeight(100), GUILayout.ExpandHeight(true));
 			
 			GUIHelpers.FormattedLabel(outerr.ToString(), labelStyle.font, labelStyle.font, labelStyle.font, TextAlignment.Left);
 			
 			GUILayout.FlexibleSpace();
+			
+			GUILayout.EndVertical();
+			
 			GUILayout.EndScrollView();
 			
 			if (exited)
-				GUI.color = Color.yellow;
+			{
+				GUI.color = process.ExitCode != 0 ? Color.red : Color.green;
+			}
 			
 			if (GUILayout.Button(cancelString))
 				this.Close();
