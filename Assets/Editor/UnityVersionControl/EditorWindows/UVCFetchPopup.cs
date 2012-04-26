@@ -38,9 +38,8 @@ public class UVCFetchPopup : EditorWindow
 	private UVCBrowser browser;
 	private bool allRemotes = true;
 	private bool prune = false;
-	private bool cancel = false;
+	private bool showOutput = false;
 	private int currentRemoteIndex;
-	private string[] remoteNames;
 	
 	/// <summary>
 	/// Initialize the fetch popup.
@@ -59,15 +58,6 @@ public class UVCFetchPopup : EditorWindow
 	void OnEnable()
 	{
 		this.minSize = new Vector2(350, 200);
-		List<string> remoteNamesList = new List<string>();
-		
-		foreach(var branch in BrowserUtility.branches)
-		{
-			if (branch.isRemote && !remoteNamesList.Contains(branch.remoteName))
-				remoteNamesList.Add(branch.remoteName);
-		}
-		
-		remoteNames = remoteNamesList.ToArray();
 	}
 	
 	void OnGUI()
@@ -78,12 +68,12 @@ public class UVCFetchPopup : EditorWindow
 			
 			GUI.enabled = !allRemotes;
 			
-			currentRemoteIndex = EditorGUILayout.Popup("Fetch from", currentRemoteIndex, remoteNames);
+			currentRemoteIndex = EditorGUILayout.Popup("Fetch from", currentRemoteIndex, BrowserUtility.remoteNames);
 				
 			GUI.enabled = true;
 			
 			prune = GUILayout.Toggle(prune, "Prune tracking branches no longer present on remote(s)");
-			
+			showOutput = GUILayout.Toggle(showOutput, "Show output");
 			
 			GUILayout.BeginHorizontal();
 			GUILayout.FlexibleSpace();
@@ -94,17 +84,16 @@ public class UVCFetchPopup : EditorWindow
 				
 				if (allRemotes)
 				{
-					UVCProcessPopup.Init(VersionControl.Fetch(CommandLine.EmptyHandler, "--all", prune), true, true, browser.OnProcessStop, true);
+					UVCProcessPopup.Init(VersionControl.Fetch(CommandLine.EmptyHandler, "--all", prune), !showOutput, true, browser.OnProcessStop, true);
 				}
 				else
 				{
-					UVCProcessPopup.Init(VersionControl.Fetch(CommandLine.EmptyHandler, remoteNames[currentRemoteIndex], prune), true, true, browser.OnProcessStop, true);
+					UVCProcessPopup.Init(VersionControl.Fetch(CommandLine.EmptyHandler, BrowserUtility.remoteNames[currentRemoteIndex], prune), !showOutput, true, browser.OnProcessStop, true);
 				}
 			}
 			GUILayout.Space(10);
 			if (GUILayout.Button("Cancel"))
 			{
-				cancel = true;
 				this.Close();
 			}
 			GUILayout.FlexibleSpace();
@@ -112,16 +101,15 @@ public class UVCFetchPopup : EditorWindow
 		}
 		else
 		{
-			cancel = true;
 			this.Close();
 		}
 	}
 	
 	void OnDestroy()
 	{
-		if (cancel && browser)
+		if (browser)
 		{
-			browser.OnCancelWindow();
+			browser.OnClosePopup();
 		}
 	}
 }

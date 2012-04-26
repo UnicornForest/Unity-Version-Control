@@ -42,7 +42,6 @@ public class UVCCommitPopup : EditorWindow
 	private string commitMessage = string.Empty;
 	public string[] oldCommits;
 	public int oldCommitSelection = 0;
-	private bool cancel = false;
 	private bool showOutput = false;
 	private bool amend = false;
 
@@ -143,7 +142,6 @@ public class UVCCommitPopup : EditorWindow
 			GUILayout.Space(10);
 			if (GUILayout.Button("Cancel"))
 			{
-				cancel = true;
 				this.Close();
 			}
 			GUILayout.FlexibleSpace();
@@ -151,16 +149,15 @@ public class UVCCommitPopup : EditorWindow
 		}
 		else
 		{
-			cancel = true;
 			this.Close();
 		}
 	}
 	
 	void OnDestroy()
 	{
-		if (cancel && browser)
+		if (browser)
 		{
-			browser.OnCancelWindow();
+			browser.OnClosePopup();
 		}
 	}
 }

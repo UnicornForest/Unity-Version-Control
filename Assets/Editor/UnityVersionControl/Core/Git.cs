@@ -450,5 +450,26 @@ namespace ThinksquirrelSoftware.UnityVersionControl.Core
 				return RunGit("fetch " + remote, exitEventHandler);
 			}
 		}
+		
+		internal static Process Pull(System.EventHandler exitEventHandler, string remoteName, string branchName, bool commit, bool includeOldMessages, bool commitWithFastForward, bool rebase)
+		{
+			var sb = new StringBuilder().Append("pull ");
+			
+			if (!commit)
+				sb.Append("--no-commit ");
+			
+			if (includeOldMessages)
+				sb.Append("--log ");
+			
+			if (commitWithFastForward)
+				sb.Append("--no-ff ");
+			
+			if (rebase)
+				sb.Append("--rebase ");
+			
+			sb.Append(remoteName).Append(' ').Append(branchName);
+			
+			return RunGit(sb.ToString(), exitEventHandler);
+		}
 	}
 }

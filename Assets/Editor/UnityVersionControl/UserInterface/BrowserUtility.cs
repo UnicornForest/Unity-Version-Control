@@ -49,6 +49,7 @@ namespace ThinksquirrelSoftware.UnityVersionControl.UserInterface
 		// Branches
 		private static VCBranch[] mBranches;
 		private static string[] mLocalBranchNames;
+		private static string[] mRemoteNames;
 		private static int mLocalBranchIndex;
 		
 		// Staged files and working tree
@@ -94,6 +95,13 @@ namespace ThinksquirrelSoftware.UnityVersionControl.UserInterface
 			get
 			{
 				return mLocalBranchNames;
+			}
+		}
+		public static string[] remoteNames
+		{
+			get
+			{
+				return mRemoteNames;
 			}
 		}
 		public static int localBranchIndex
@@ -364,6 +372,8 @@ namespace ThinksquirrelSoftware.UnityVersionControl.UserInterface
 		/// TODO: Implement button
 		public static void OnButton_Pull(UVCBrowser browser)
 		{
+			browser.OnProcessStart();
+			UVCPullPopup.Init(browser);
 		}
 		
 		/// <summary>
@@ -638,21 +648,31 @@ namespace ThinksquirrelSoftware.UnityVersionControl.UserInterface
 		{
 			mBranches = VersionControl.ParseBranches((sender as System.Diagnostics.Process).StandardOutput.ReadToEnd());
 			
-			var localBranchList = new List<string>();
+			var tempList = new List<string>();
+			var tempList2 = new List<string>();
 			
 			for(int i = 0; i < mBranches.Length; i++)
 			{
 				if (!mBranches[i].isRemote)
 				{
-					localBranchList.Add(mBranches[i].name);
+					tempList.Add(mBranches[i].name);
 					if (mBranches[i].isCurrent)
 					{
 						mLocalBranchIndex = i;
 					}
 				}
+				else
+				{
+					if (!tempList2.Contains(mBranches[i].remoteName))
+					{
+						tempList2.Add(mBranches[i].remoteName);
+					}
+				}
 			}
 			
-			mLocalBranchNames = localBranchList.ToArray();
+			mLocalBranchNames = tempList.ToArray();
+			
+			mRemoteNames = tempList2.ToArray();
 		}
 		
 		// TODO: "Pretty" diff parsing

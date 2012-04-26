@@ -284,14 +284,32 @@ namespace ThinksquirrelSoftware.UnityVersionControl.Core
 		}
 		
 		/// <summary>
-		/// Fetch the specified remote, without pulling the data into the repository.
+		/// Fetch the specified remote, without pulling the data into the working branch.
 		/// </summary>
+		/// TODO: Implement Hg
 		public static Process Fetch(System.EventHandler exitEventHandler, string remote, bool prune)
 		{
 			switch(mVersionControlType)
 			{
 			case VersionControlType.Git:
 				return Git.Fetch(exitEventHandler, remote, prune);
+			case VersionControlType.Hg:
+				throw new System.NotImplementedException();
+			}
+			
+			return null;
+		}
+		
+		/// <summary>
+		/// Pull the specified branch.
+		/// </summary>
+		/// TODO: Implement Hg
+		public static Process Pull(System.EventHandler exitEventHandler, string remoteName, string branchName, bool commit, bool includeOldMessages, bool commitWithFastForward, bool rebase)
+		{
+			switch(mVersionControlType)
+			{
+			case VersionControlType.Git:
+				return Git.Pull(exitEventHandler, remoteName, branchName, commit, includeOldMessages, commitWithFastForward, rebase);
 			case VersionControlType.Hg:
 				throw new System.NotImplementedException();
 			}

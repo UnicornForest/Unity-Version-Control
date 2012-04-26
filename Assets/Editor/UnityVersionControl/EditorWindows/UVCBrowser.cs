@@ -126,7 +126,7 @@ public class UVCBrowser : EditorWindow
 		horizontalResizeWidget1 = Mathf.Clamp(EditorPrefs.GetFloat("UnityVersionControl.HWidget1", position.width - 500), 80, position.width - 80);
 		
 		// Tree/Index Widget
-		horizontalResizeWidget1 = Mathf.Clamp(EditorPrefs.GetFloat("UnityVersionControl.VWidget1", (position.height - 220) / 2), 60, position.height - 180);
+		verticalResizeWidget1 = Mathf.Clamp(EditorPrefs.GetFloat("UnityVersionControl.VWidget1", (position.height - 220) / 2), 60, position.height - 180);
 			
 	}
 	
@@ -593,17 +593,15 @@ public class UVCBrowser : EditorWindow
 	
 	public void OnProcessStop(int errorCode, string stdout, string stderr)
 	{
-		guiEnabled = true;
 		if (errorCode == 0)
 		{
 			BrowserUtility.stagedFiles.Clear();
 			BrowserUtility.workingTree.Clear();
 		}
 		BrowserUtility.ForceUpdate();
-		Repaint();
 	}
 	
-	public void OnCancelWindow()
+	public void OnClosePopup()
 	{
 		guiEnabled = true;
 		Repaint();
