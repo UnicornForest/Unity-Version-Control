@@ -280,7 +280,10 @@ public class UVCBrowser : EditorWindow
 		GUILayout.BeginHorizontal();
 		GUI.backgroundColor *= .5f;
 		GUILayout.Label("State", EditorStyles.toolbarButton, GUILayout.Width(80));
-		GUILayout.Label("File", EditorStyles.toolbarButton, GUILayout.Width(300));
+		if (viewMode != BrowserViewMode.Mini)
+		{
+			GUILayout.Label("File", EditorStyles.toolbarButton, GUILayout.Width(300));
+		}
 		GUILayout.Label("Path", EditorStyles.toolbarButton, GUILayout.ExpandWidth(true));
 		GUI.backgroundColor = Color.white;
 		GUILayout.EndHorizontal();
@@ -438,16 +441,20 @@ public class UVCBrowser : EditorWindow
 		
 		GUILayout.BeginHorizontal();
 		string statusString = file.fileState1 != FileState.Unmodified ? file.fileState1.ToString() : file.fileState2.ToString();
-		string fileNameString = !string.IsNullOrEmpty(file.name2) ? file.name2 : file.name1;
 		string filePathString = !string.IsNullOrEmpty(file.path2) ? file.path2 : file.path1;
 		bool t1 = GUILayout.Toggle(file.selected, statusString, selectionStyle, GUILayout.Width(75));
-		bool t2 = GUILayout.Toggle(file.selected, fileNameString, selectionStyle, GUILayout.Width(295));
+		bool t2 = false;
+		if (viewMode != BrowserViewMode.Mini)
+		{
+			string fileNameString = !string.IsNullOrEmpty(file.name2) ? file.name2 : file.name1;
+			t2 = GUILayout.Toggle(file.selected, fileNameString, selectionStyle, GUILayout.Width(295));
+		}
 		bool t3 = GUILayout.Toggle(file.selected, filePathString, selectionStyle, GUILayout.ExpandWidth(true));
 		GUILayout.EndHorizontal();
 		
 		GUI.backgroundColor = Color.white;
 		
-		if (t2 != file.selected)
+		if (viewMode != BrowserViewMode.Mini && t2 != file.selected)
 		{
 			BrowserUtility.ValidateSelection(file, t2);
 		}
