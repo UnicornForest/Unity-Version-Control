@@ -148,7 +148,7 @@ public class UVCProcessPopup : EditorWindow
 			
 			GUILayout.BeginVertical();
 			
-			EditorGUILayout.SelectableLabel(command, labelStyle, GUILayout.MinHeight(100), GUILayout.ExpandHeight(true));
+			EditorGUILayout.SelectableLabel(command, labelStyle, GUILayout.MinHeight(50), GUILayout.ExpandHeight(true));
 			
 			GUIHelpers.FormattedLabel(outerr.ToString(), labelStyle.font, labelStyle.font, labelStyle.font, TextAlignment.Left);
 			
