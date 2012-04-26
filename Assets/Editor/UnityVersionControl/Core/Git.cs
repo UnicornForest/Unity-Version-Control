@@ -508,5 +508,34 @@ namespace ThinksquirrelSoftware.UnityVersionControl.Core
 			
 			return RunGit(sb.ToString(0, sb.Length - 1), exitEventHandler);		
 		}
+		
+		internal static Process CreateBranch(System.EventHandler exitEventHandler, string branchName, bool checkoutNewBranch)
+		{
+			var sb = new StringBuilder();
+			
+			if (checkoutNewBranch)
+				sb.Append("checkout -b ").Append(branchName);
+			else
+				sb.Append("branch ").Append(branchName);
+			
+			return RunGit(sb.ToString(), exitEventHandler);
+		}
+		
+		internal static Process DeleteLocalBranches(System.EventHandler exitEventHandler, string[] branchNames, bool force)
+		{
+			var sb = new StringBuilder().Append("branch ");
+			
+			if (force)
+				sb.Append("-D ");
+			else
+				sb.Append("-d ");
+			
+			foreach(var str in branchNames)
+			{
+				sb.Append(str).Append(' ');
+			}
+			
+			return RunGit(sb.ToString(0, sb.Length - 1), exitEventHandler);
+		}
 	}
 }

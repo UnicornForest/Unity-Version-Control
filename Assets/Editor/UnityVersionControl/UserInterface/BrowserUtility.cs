@@ -408,6 +408,8 @@ namespace ThinksquirrelSoftware.UnityVersionControl.UserInterface
 		/// TODO: Implement button
 		public static void OnButton_Branch(UVCBrowser browser)
 		{
+			browser.OnProcessStart();
+			UVCBranchPopup.Init(browser);		
 		}
 		
 		/// <summary>

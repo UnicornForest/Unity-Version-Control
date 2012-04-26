@@ -351,5 +351,39 @@ namespace ThinksquirrelSoftware.UnityVersionControl.Core
 			return null;
 		}
 		
+		/// <summary>
+		/// Create a new branch.
+		/// </summary>
+		/// TODO: Implement Hg
+		public static Process CreateBranch(System.EventHandler exitEventHandler, string branchName, bool checkoutNewBranch)
+		{
+			switch(mVersionControlType)
+			{
+			case VersionControlType.Git:
+				return Git.CreateBranch(exitEventHandler, branchName, checkoutNewBranch);
+			case VersionControlType.Hg:
+				throw new System.NotImplementedException();
+			}
+			
+			return null;
+		}
+		
+		/// <summary>
+		/// Delete local branches.
+		/// </summary>
+		/// TODO: Implement Hg
+		public static Process DeleteLocalBranches(System.EventHandler exitEventHandler, string[] branchNames, bool force)
+		{
+			switch(mVersionControlType)
+			{
+			case VersionControlType.Git:
+				return Git.DeleteLocalBranches(exitEventHandler, branchNames, force);
+			case VersionControlType.Hg:
+				throw new System.NotImplementedException();
+			}
+			
+			return null;
+		}
+		
 	}
 }

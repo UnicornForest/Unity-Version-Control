@@ -117,7 +117,7 @@ public class UVCPushPopup : EditorWindow
 	{	
 		if (browser != null)
 		{	
-			int index = EditorGUILayout.Popup("Push to", currentRemoteIndex, BrowserUtility.remoteNames);
+			int index = EditorGUILayout.Popup("Push to:", currentRemoteIndex, BrowserUtility.remoteNames);
 			if (index != currentRemoteIndex)
 			{
 				currentRemoteIndex = index;
@@ -137,8 +137,10 @@ public class UVCPushPopup : EditorWindow
 			GUILayout.FlexibleSpace();
 			GUILayout.EndHorizontal();
 			
+			GUILayout.BeginHorizontal();
+			GUILayout.FlexibleSpace();
 			scrollVector = GUILayout.BeginScrollView(scrollVector, GUILayout.ExpandHeight(true));
-			
+			GUILayout.BeginVertical();
 			for(int i = 0; i < remoteBranchIndices.Length; i++)
 			{
 				GUILayout.BeginHorizontal();
@@ -151,8 +153,10 @@ public class UVCPushPopup : EditorWindow
 				GUILayout.FlexibleSpace();
 				GUILayout.EndHorizontal();
 			}
-			
+			GUILayout.EndVertical();
 			GUILayout.EndScrollView();
+			GUILayout.FlexibleSpace();
+			GUILayout.EndHorizontal();
 			
 			GUILayout.Space(12);
 			
