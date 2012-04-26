@@ -348,10 +348,13 @@ public class UVCBrowser : EditorWindow
 	{	
 		if (GUILayout.Button("Commit", GUILayout.Width(70), GUILayout.Height(60)))
 			BrowserUtility.OnButton_Commit(this);
-			
-		if (GUILayout.Button("Checkout", GUILayout.Width(70), GUILayout.Height(60)))
-			BrowserUtility.OnButton_Checkout(this);
 		
+		if (viewMode != BrowserViewMode.Mini)
+		{
+			if (GUILayout.Button("Checkout", GUILayout.Width(70), GUILayout.Height(60)))
+				BrowserUtility.OnButton_Checkout(this);
+		}
+				
 		if (GUILayout.Button("Reset", GUILayout.Width(70), GUILayout.Height(60)))
 			BrowserUtility.OnButton_Reset(this);
 		
