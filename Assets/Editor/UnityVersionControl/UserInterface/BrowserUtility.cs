@@ -354,6 +354,8 @@ namespace ThinksquirrelSoftware.UnityVersionControl.UserInterface
 		/// TODO: Implement button
 		public static void OnButton_Fetch(UVCBrowser browser)
 		{
+			browser.OnProcessStart();
+			UVCFetchPopup.Init(browser);
 		}
 		
 		/// <summary>

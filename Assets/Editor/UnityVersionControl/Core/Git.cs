@@ -438,5 +438,17 @@ namespace ThinksquirrelSoftware.UnityVersionControl.Core
 				return RunGit("checkout " + item, exitEventHandler);
 			}
 		}
+		
+		internal static Process Fetch(System.EventHandler exitEventHandler, string remote, bool prune)
+		{
+			if (prune)
+			{
+				return RunGit("fetch --prune " + remote, exitEventHandler);
+			}
+			else
+			{
+				return RunGit("fetch " + remote, exitEventHandler);
+			}
+		}
 	}
 }

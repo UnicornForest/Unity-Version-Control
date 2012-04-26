@@ -30,6 +30,7 @@ using System.Text;
 /// <summary>
 /// The process popup editor window.
 /// </summary>
+/// TODO: Handle user input (passwords and such)
 public class UVCProcessPopup : EditorWindow
 {
 	private Vector2 scrollPosition;

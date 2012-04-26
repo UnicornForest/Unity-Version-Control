@@ -283,5 +283,21 @@ namespace ThinksquirrelSoftware.UnityVersionControl.Core
 			return null;
 		}
 		
+		/// <summary>
+		/// Fetch the specified remote, without pulling the data into the repository.
+		/// </summary>
+		public static Process Fetch(System.EventHandler exitEventHandler, string remote, bool prune)
+		{
+			switch(mVersionControlType)
+			{
+			case VersionControlType.Git:
+				return Git.Fetch(exitEventHandler, remote, prune);
+			case VersionControlType.Hg:
+				throw new System.NotImplementedException();
+			}
+			
+			return null;
+		}
+		
 	}
 }

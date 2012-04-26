@@ -32,7 +32,6 @@ using System.Collections.Generic;
 /// <summary>
 /// The commit popup editor window.
 /// </summary>
-/// TODO: Add a list of previous user commit messages (store in EditorPrefs, to keep it from being versioned)
 /// TODO: Add a toggle to push commits
 public class UVCCommitPopup : EditorWindow
 {
