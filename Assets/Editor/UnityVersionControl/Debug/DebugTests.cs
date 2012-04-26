@@ -28,7 +28,7 @@ using UnityEditor;
 using UnityEngine;
 using ThinksquirrelSoftware.UnityVersionControl.Core;
 
-namespace ThinksquirrelSoftware.UnityVersionControl.Tests
+namespace ThinksquirrelSoftware.UnityVersionControl.Debug
 {
 	public static class DebugTests
 	{	
