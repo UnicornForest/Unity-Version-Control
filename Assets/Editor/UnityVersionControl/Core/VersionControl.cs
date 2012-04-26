@@ -233,7 +233,7 @@ namespace ThinksquirrelSoftware.UnityVersionControl.Core
 		}
 		
 		/// <summary>
-		/// Remove the specified file(s).
+		/// Reset the specified file(s).
 		/// </summary>
 		/// TODO: Implement Hg
 		public static Process Reset(System.EventHandler exitEventHandler, string branch, params VCFile[] files)
@@ -242,6 +242,23 @@ namespace ThinksquirrelSoftware.UnityVersionControl.Core
 			{
 			case VersionControlType.Git:
 				return Git.Reset(exitEventHandler, branch, files);
+			case VersionControlType.Hg:
+				throw new System.NotImplementedException();
+			}
+			
+			return null;
+		}
+		
+		/// <summary>
+		/// Reset the specified file(s) to the last commit.
+		/// </summary>
+		/// TODO: Implement Hg
+		public static Process ResetLast(System.EventHandler exitEventHandler, params VCFile[] files)
+		{
+			switch(mVersionControlType)
+			{
+			case VersionControlType.Git:
+				return Git.ResetLast(exitEventHandler, files);
 			case VersionControlType.Hg:
 				throw new System.NotImplementedException();
 			}

@@ -30,7 +30,9 @@ using System.Text;
 /// <summary>
 /// The process popup editor window.
 /// </summary>
-/// TODO: Handle user input (passwords and such)
+/// TODO: Handle user input (passwords)
+/// TODO: Multicolored GUI label for output and error streams
+/// TODO: Detect only true errors
 public class UVCProcessPopup : EditorWindow
 {
 	private Vector2 scrollPosition;
@@ -112,7 +114,7 @@ public class UVCProcessPopup : EditorWindow
 					{
 						error.Append(process.StandardError.ReadToEnd());
 							
-						if (error.Length > 0)
+						if (process.ExitCode != 0)
 						{
 							exitOnCompletion = false;
 						}
@@ -142,8 +144,13 @@ public class UVCProcessPopup : EditorWindow
 			
 			GUILayout.EndScrollView();
 			
+			if (exited)
+				GUI.color = Color.yellow;
+			
 			if (GUILayout.Button(cancelString))
 				this.Close();
+			
+			GUI.color = Color.white;
 		}
 		else
 		{

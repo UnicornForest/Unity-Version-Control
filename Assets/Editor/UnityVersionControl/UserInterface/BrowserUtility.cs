@@ -299,6 +299,13 @@ namespace ThinksquirrelSoftware.UnityVersionControl.UserInterface
 		/// TODO: Implement button
 		public static void OnButton_Reset(UVCBrowser browser)
 		{
+			if (EditorUtility.DisplayDialog(
+						"Confirm Reset?",
+			            "This will undo all changes to the selected files and reset them to the last commit.", "Ok", "Cancel"))
+			{
+				browser.OnProcessStart();
+				UVCProcessPopup.Init(VersionControl.ResetLast(CommandLine.EmptyHandler, mSelectedFileCache), true, true, browser.OnProcessStop, true);
+			}
 		}
 		
 		/// <summary>

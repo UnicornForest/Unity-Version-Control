@@ -424,7 +424,7 @@ namespace ThinksquirrelSoftware.UnityVersionControl.Core
 				}
 			}
 			
-			return RunGit(f.ToString(), exitEventHandler);
+			return RunGit(f.ToString(0, f.Length - 1), exitEventHandler);
 		}
 		
 		internal static Process Checkout(System.EventHandler exitEventHandler, string item, bool force)
@@ -437,6 +437,26 @@ namespace ThinksquirrelSoftware.UnityVersionControl.Core
 			{
 				return RunGit("checkout " + item, exitEventHandler);
 			}
+		}
+		
+		internal static Process ResetLast(System.EventHandler exitEventHandler, VCFile[] files)
+		{
+			var sb = new StringBuilder().Append("checkout -- ");
+			
+			foreach(var file in files)
+			{
+				if (string.IsNullOrEmpty(file.path2))
+				{
+					sb.Append('"').Append(file.path1).Append('"').Append(' ');
+				}
+				else
+				{
+					sb.Append(file.path2).Append(' ');
+				}
+			}
+			
+			return RunGit(sb.ToString(0, sb.Length - 1), exitEventHandler);
+			
 		}
 		
 		internal static Process Fetch(System.EventHandler exitEventHandler, string remote, bool prune)
