@@ -358,12 +358,15 @@ public class UVCBrowser : EditorWindow
 		if (GUILayout.Button("Reset", GUILayout.Width(70), GUILayout.Height(60)))
 			BrowserUtility.OnButton_Reset(this);
 		
-		GUI.enabled = guiEnabled && BrowserUtility.workingTreeSelected;
-		
-		if (GUILayout.Button("Add", GUILayout.Width(70), GUILayout.Height(60)))
-			BrowserUtility.OnButton_Add(this);
-		
-		GUI.enabled = guiEnabled && BrowserUtility.anyFileSelected;
+		if (viewMode != BrowserViewMode.Mini)
+		{
+			GUI.enabled = guiEnabled && BrowserUtility.workingTreeSelected;
+			
+			if (GUILayout.Button("Add", GUILayout.Width(70), GUILayout.Height(60)))
+				BrowserUtility.OnButton_Add(this);
+			
+			GUI.enabled = guiEnabled && BrowserUtility.anyFileSelected;
+		}
 		
 		if (GUILayout.Button("Remove", GUILayout.Width(70), GUILayout.Height(60)))
 			BrowserUtility.OnButton_Remove(this);
@@ -396,8 +399,11 @@ public class UVCBrowser : EditorWindow
 		
 		GUILayout.FlexibleSpace();
 		
-		if (GUILayout.Button("Settings", GUILayout.Width(70), GUILayout.Height(60)))	
-			BrowserUtility.OnButton_Settings(this);
+		if (viewMode != BrowserViewMode.Mini)
+		{
+			if (GUILayout.Button("Settings", GUILayout.Width(70), GUILayout.Height(60)))	
+				BrowserUtility.OnButton_Settings(this);
+		}
 	}
 	
 	void DisplayFile(VCFile file, ref int index, bool staged)
