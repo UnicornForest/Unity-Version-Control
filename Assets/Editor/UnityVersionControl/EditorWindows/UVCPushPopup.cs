@@ -43,7 +43,7 @@ public class UVCPushPopup : EditorWindow
 	private string[] remoteBranches;
 	private List<string> branchList = new List<string>();
 	private bool selectAll;
-	private bool pushAllTags;
+	private bool pushAllTags = true;
 	private bool showOutput;
 	
 	/// <summary>
