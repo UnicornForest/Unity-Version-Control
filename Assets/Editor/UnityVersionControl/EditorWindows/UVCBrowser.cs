@@ -97,7 +97,7 @@ public class UVCBrowser : EditorWindow
 	
 	void LoadSkin()
 	{
-		versionControlSkin = EditorGUIUtility.isProSkin ? Resources.Load("_VersionControlSkin_Dark") as GUISkin : Resources.Load("_VersionControlSkin_Dark") as GUISkin;
+		versionControlSkin = EditorGUIUtility.isProSkin ? Resources.Load("_VersionControlSkin_Dark") as GUISkin : Resources.Load("_VersionControlSkin") as GUISkin;
 	}
 	
 	void Update()
