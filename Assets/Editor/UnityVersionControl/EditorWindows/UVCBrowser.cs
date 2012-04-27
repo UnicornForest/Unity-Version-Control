@@ -63,6 +63,7 @@ public class UVCBrowser : EditorWindow
 	private FileState workingTreeFilter = (FileState)1;
 	
 	// GUI styles
+	private GUIStyle blankScrollbar;
 	private GUIStyle selectionStyle;
 	
 	// Controls initialization of the GUI style
@@ -117,6 +118,9 @@ public class UVCBrowser : EditorWindow
 		selectionStyle.normal.background = new Texture2D(1, 1);
 		selectionStyle.normal.background.SetPixel(1, 1, new Color(.25f, .25f, .25f, .25f));
 		selectionStyle.normal.background.Apply();
+		
+		blankScrollbar = new GUIStyle(GUI.skin.verticalScrollbar);
+		blankScrollbar.fixedWidth = 0;
 	}
 	
 	void LoadSettings()
@@ -157,22 +161,35 @@ public class UVCBrowser : EditorWindow
 			LoadSettings();
 		}
 		
-		scrollPosition1 = GUILayout.BeginScrollView(scrollPosition1, GUILayout.Height(110));
+		scrollPosition1 = GUILayout.BeginScrollView(scrollPosition1, false, false, GUI.skin.horizontalScrollbar, blankScrollbar, GUILayout.Height(110));
+				
+		#region Main button row
+		GUILayout.BeginHorizontal();
+	
+		DisplayButtons();
+		
+		GUILayout.EndHorizontal();
+		#endregion
+		
+		GUILayout.Space(12);
+		GUILayout.Box("", GUILayout.ExpandWidth(true), GUILayout.Height(3));
 		
 		#region Repository location, initialization
 		GUILayout.BeginHorizontal();
-		
 		if (!string.IsNullOrEmpty(BrowserUtility.repositoryLocation))
 		{
 			GUILayout.Label("Project: " + BrowserUtility.repositoryShortName);
 			
 			GUILayout.FlexibleSpace();
 			
+			/* TODO: Put this in the settings window
+			 *  
 			if (viewMode != BrowserViewMode.ArtistMode)
 			{
 				if (GUILayout.Button("Reinitialize"))
 					BrowserUtility.OnButton_Init(this);
 			}
+			*/
 			
 			var vm = (BrowserViewMode)EditorGUILayout.EnumPopup(viewMode);
 			
@@ -190,6 +207,7 @@ public class UVCBrowser : EditorWindow
 			
 			GUILayout.FlexibleSpace();
 			
+			// Todo, make initialization UI prettier
 			if (GUILayout.Button("Initialize"))
 				BrowserUtility.OnButton_Init(this);
 			
@@ -204,14 +222,7 @@ public class UVCBrowser : EditorWindow
 
 		GUILayout.EndHorizontal();
 		#endregion
-		
-		#region Main button row
-		GUILayout.BeginHorizontal();
-	
-		DisplayButtons();
-		
-		GUILayout.EndHorizontal();
-		#endregion
+
 		
 		GUILayout.EndScrollView();
 		
