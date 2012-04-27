@@ -64,13 +64,15 @@ public class UVCBrowser : EditorWindow
 	
 	// GUI styles
 	private GUIStyle selectionStyle;
-	private GUIStyle vertWidgetStyle;
 	
 	// Controls initialization of the GUI style
 	private bool initGUIStyle;
 	
 	// Controls the overall GUI
 	private bool guiEnabled = true;
+	
+	// GUISkin
+	private GUISkin versionControlSkin;
 	
 	[MenuItem ("Version Control/Browser")]
 	static void Init()
@@ -89,6 +91,13 @@ public class UVCBrowser : EditorWindow
 		{
 			position = new Rect(position.x, position.y, this.minSize.x, this.minSize.y);
 		}
+		
+		LoadSkin();
+	}
+	
+	void LoadSkin()
+	{
+		versionControlSkin = EditorGUIUtility.isProSkin ? Resources.Load("_VersionControlSkin_Dark") as GUISkin : Resources.Load("_VersionControlSkin_Dark") as GUISkin;
 	}
 	
 	void Update()
@@ -108,9 +117,6 @@ public class UVCBrowser : EditorWindow
 		selectionStyle.normal.background = new Texture2D(1, 1);
 		selectionStyle.normal.background.SetPixel(1, 1, new Color(.25f, .25f, .25f, .25f));
 		selectionStyle.normal.background.Apply();
-		
-		vertWidgetStyle = new GUIStyle(EditorStyles.toolbarButton);
-		vertWidgetStyle.fixedHeight = 0;
 	}
 	
 	void LoadSettings()
@@ -274,7 +280,7 @@ public class UVCBrowser : EditorWindow
 		#endregion
 		
 		#region Second scroll area - Working tree
-		if (VersionControl.versionControlType == VersionControlType.Git && viewMode != BrowserViewMode.ArtistMode)
+		if (VersionControl.versionControlType == VersionControlType.Git && viewMode != BrowserViewMode.ArtistMode && showStagedFiles)
 		{
 			GUILayout.BeginVertical(GUILayout.Height(position.height - 126 - verticalResizeWidget1 - 3));
 		}
@@ -309,7 +315,7 @@ public class UVCBrowser : EditorWindow
 		
 		GUILayout.EndVertical();
 		GUILayout.EndScrollView();
-		if (VersionControl.versionControlType == VersionControlType.Git && viewMode != BrowserViewMode.ArtistMode)
+		if (VersionControl.versionControlType == VersionControlType.Git && viewMode != BrowserViewMode.ArtistMode && showStagedFiles)
 		{
 			GUILayout.EndVertical();
 		}
@@ -365,60 +371,69 @@ public class UVCBrowser : EditorWindow
 			GUILayout.FlexibleSpace();
 		}
 		
-		if (GUILayout.Button("Commit", GUILayout.Width(70), GUILayout.Height(60)))
+		if (GUILayout.Button("Commit", versionControlSkin.GetStyle("Buttons_Main_Commit"), GUILayout.Width(64), GUILayout.Height(64)))
 			BrowserUtility.OnButton_Commit(this);
-		
+				
 		if (viewMode != BrowserViewMode.ArtistMode)
 		{
 			GUI.enabled = false;
-			GUI.color *= .5f;
+			GUI.color *= .75f;
 			
-			if (GUILayout.Button("Checkout", GUILayout.Width(70), GUILayout.Height(60)))
+			if (GUILayout.Button("Checkout", versionControlSkin.GetStyle("Buttons_Main_Checkout"), GUILayout.Width(64), GUILayout.Height(64)))
 				BrowserUtility.OnButton_Checkout(this);
 			
 			GUI.color = Color.white;
 			GUI.enabled = guiEnabled;
 		}
 				
-		if (GUILayout.Button("Reset", GUILayout.Width(70), GUILayout.Height(60)))
+		if (GUILayout.Button("Reset", versionControlSkin.GetStyle("Buttons_Main_Reset"), GUILayout.Width(64), GUILayout.Height(64)))
 			BrowserUtility.OnButton_Reset(this);
 		
 		if (viewMode != BrowserViewMode.ArtistMode)
 		{
+			GUI.enabled = false;
+			GUI.color *= .75f;
+			
+			if (GUILayout.Button("Stash", versionControlSkin.GetStyle("Buttons_Main_Stash"), GUILayout.Width(64), GUILayout.Height(64)))
+				Debug.Log("not implemented");
+			
+			GUI.color = Color.white;
+			GUI.enabled = guiEnabled;
+			
 			GUI.enabled = guiEnabled && BrowserUtility.workingTreeSelected;
 			
-			if (GUILayout.Button("Add", GUILayout.Width(70), GUILayout.Height(60)))
+			if (GUILayout.Button("Add", versionControlSkin.GetStyle("Buttons_Main_Add"), GUILayout.Width(64), GUILayout.Height(64)))
 				BrowserUtility.OnButton_Add(this);
 			
 			GUI.enabled = guiEnabled && BrowserUtility.anyFileSelected;
 		
-			if (GUILayout.Button("Remove", GUILayout.Width(70), GUILayout.Height(60)))
+			if (GUILayout.Button("Remove", versionControlSkin.GetStyle("Buttons_Main_Remove"), GUILayout.Width(64), GUILayout.Height(64)))
 				BrowserUtility.OnButton_Remove(this);
 			
 			GUI.enabled = guiEnabled;
 		
-			if (GUILayout.Button("Fetch", GUILayout.Width(70), GUILayout.Height(60)))
+			if (GUILayout.Button("Fetch", versionControlSkin.GetStyle("Buttons_Main_Fetch"), GUILayout.Width(64), GUILayout.Height(64)))
 				BrowserUtility.OnButton_Fetch(this);
 		}
 		
-		if (GUILayout.Button("Pull", GUILayout.Width(70), GUILayout.Height(60)))
+		if (GUILayout.Button("Pull", versionControlSkin.GetStyle("Buttons_Main_Pull"), GUILayout.Width(64), GUILayout.Height(64)))
 			BrowserUtility.OnButton_Pull(this);
 		
-		if (GUILayout.Button("Push", GUILayout.Width(70), GUILayout.Height(60)))
+		if (GUILayout.Button("Push", versionControlSkin.GetStyle("Buttons_Main_Push"), GUILayout.Width(64), GUILayout.Height(64)))
 			BrowserUtility.OnButton_Push(this);
 		
 		if (viewMode != BrowserViewMode.ArtistMode)
 		{	
-			if (GUILayout.Button("Branch", GUILayout.Width(70), GUILayout.Height(60)))
+			if (GUILayout.Button("Branch", versionControlSkin.GetStyle("Buttons_Main_Branch"), GUILayout.Width(64), GUILayout.Height(64)))
 				BrowserUtility.OnButton_Branch(this);
 			
 			GUI.enabled = false;
-			GUI.color *= .5f;
+			GUI.color *= .75f;
 			
-			if (GUILayout.Button("Merge", GUILayout.Width(70), GUILayout.Height(60)))
+			if (GUILayout.Button("Merge", versionControlSkin.GetStyle("Buttons_Main_Merge"), GUILayout.Width(64), GUILayout.Height(64)))
 				BrowserUtility.OnButton_Merge(this);
 			
-			if (GUILayout.Button("Tag", GUILayout.Width(70), GUILayout.Height(60)))
+			if (GUILayout.Button("Tag",  versionControlSkin.GetStyle("Buttons_Main_Tag"), GUILayout.Width(64), GUILayout.Height(64)))
 				BrowserUtility.OnButton_Tag(this);
 			
 			GUI.color = Color.white;
@@ -429,8 +444,14 @@ public class UVCBrowser : EditorWindow
 		
 		if (viewMode != BrowserViewMode.ArtistMode)
 		{
-			if (GUILayout.Button("Settings", GUILayout.Width(70), GUILayout.Height(60)))	
+			GUI.enabled = false;
+			GUI.color *= .75f;
+			
+			if (GUILayout.Button("Settings", versionControlSkin.GetStyle("Buttons_Main_Settings"), GUILayout.Width(64), GUILayout.Height(64)))
 				BrowserUtility.OnButton_Settings(this);
+			
+			GUI.color = Color.white;
+			GUI.enabled = guiEnabled;
 		}
 	}
 	
@@ -604,6 +625,7 @@ public class UVCBrowser : EditorWindow
 			BrowserUtility.workingTree.Clear();
 		}
 		BrowserUtility.ForceUpdate();
+		AssetDatabase.Refresh();
 	}
 	
 	public void OnClosePopup()
