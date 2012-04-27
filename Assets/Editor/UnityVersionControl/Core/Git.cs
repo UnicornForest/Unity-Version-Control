@@ -343,9 +343,14 @@ namespace ThinksquirrelSoftware.UnityVersionControl.Core
 			return RunGit(f.ToString(), exitEventHandler);
 		}
 		
-		internal static Process Remove(System.EventHandler exitEventHandler, params VCFile[] files)
+		internal static Process Remove(System.EventHandler exitEventHandler, bool clean, params VCFile[] files)
 		{
-			var f = new StringBuilder().Append("rm -f ");
+			var f = new StringBuilder();
+			
+			if (clean)
+				f.Append("clean -f -x ");
+			else
+				f.Append("rm -f	");
 			
 			foreach(var file in files)
 			{

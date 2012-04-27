@@ -219,12 +219,12 @@ namespace ThinksquirrelSoftware.UnityVersionControl.Core
 		/// Remove the specified file(s).
 		/// </summary>
 		/// TODO: Implement Hg
-		public static Process Remove(System.EventHandler exitEventHandler, params VCFile[] files)
+		public static Process Remove(System.EventHandler exitEventHandler, bool clean, params VCFile[] files)
 		{
 			switch(mVersionControlType)
 			{
 			case VersionControlType.Git:
-				return Git.Remove(exitEventHandler, files);
+				return Git.Remove(exitEventHandler, clean, files);
 			case VersionControlType.Hg:
 				throw new System.NotImplementedException();
 			}

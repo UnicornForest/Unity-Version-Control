@@ -339,7 +339,7 @@ namespace ThinksquirrelSoftware.UnityVersionControl.UserInterface
 				
 				foreach(var file in mSelectedFileCache)
 				{
-					if (file.fileState2 == FileState.Modified)
+					if (file.fileState2 == FileState.Modified || file.fileState2 == FileState.Untracked)
 					{
 						dialog = true;
 						if (string.IsNullOrEmpty(file.path2))
@@ -360,7 +360,7 @@ namespace ThinksquirrelSoftware.UnityVersionControl.UserInterface
 			            "The following files contain changes or information which is not in source control, and will be irretrievably lost if you remove them:\n" + 
 						modFiles.ToString(0, modFiles.Length -1), "Ok", "Cancel"))
 					{
-						UVCProcessPopup.Init(VersionControl.Remove(CommandLine.EmptyHandler, mSelectedFileCache), true, true, browser.OnProcessStop, true);
+						UVCProcessPopup.Init(VersionControl.Remove(CommandLine.EmptyHandler, true, mSelectedFileCache), true, true, browser.OnProcessStop, true);
 					}
 					else
 					{
@@ -369,7 +369,7 @@ namespace ThinksquirrelSoftware.UnityVersionControl.UserInterface
 				}
 				else
 				{
-					UVCProcessPopup.Init(VersionControl.Remove(CommandLine.EmptyHandler, mSelectedFileCache), true, true, browser.OnProcessStop, true);
+					UVCProcessPopup.Init(VersionControl.Remove(CommandLine.EmptyHandler, false, mSelectedFileCache), true, true, browser.OnProcessStop, true);
 				}
 				
 			}
