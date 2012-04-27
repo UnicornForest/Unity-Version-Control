@@ -72,9 +72,6 @@ public class UVCBrowser : EditorWindow
 	// Controls initialization of the GUI style
 	private bool initGUIStyle;
 	
-	// Controls the overall GUI
-	private bool guiEnabled = true;
-	
 	// GUISkin
 	private GUISkin versionControlSkin;
 	
@@ -157,7 +154,7 @@ public class UVCBrowser : EditorWindow
 	
 	void OnGUI()
 	{	
-		GUI.enabled = guiEnabled;
+		GUI.enabled = BrowserUtility.guiEnabled;
 		
 		if (!initGUIStyle)
 		{
@@ -385,7 +382,7 @@ public class UVCBrowser : EditorWindow
 		DisplayStatusBar();
 		#endregion
 		
-		GUI.enabled = guiEnabled;
+		GUI.enabled = BrowserUtility.guiEnabled;
 	}
 	
 	void DisplayButtons()
@@ -407,7 +404,7 @@ public class UVCBrowser : EditorWindow
 				BrowserUtility.OnButton_Checkout(this);
 			
 			GUI.color = Color.white;
-			GUI.enabled = guiEnabled;
+			GUI.enabled = BrowserUtility.guiEnabled;
 		}
 				
 		if (GUILayout.Button("Reset", versionControlSkin.GetStyle("Buttons_Main_Reset"), GUILayout.Width(64), GUILayout.Height(64)))
@@ -422,19 +419,19 @@ public class UVCBrowser : EditorWindow
 				Debug.Log("not implemented");
 			
 			GUI.color = Color.white;
-			GUI.enabled = guiEnabled;
+			GUI.enabled = BrowserUtility.guiEnabled;
 			
-			GUI.enabled = guiEnabled && BrowserUtility.workingTreeSelected;
+			GUI.enabled = BrowserUtility.guiEnabled && BrowserUtility.workingTreeSelected;
 			
 			if (GUILayout.Button("Add", versionControlSkin.GetStyle("Buttons_Main_Add"), GUILayout.Width(64), GUILayout.Height(64)))
 				BrowserUtility.OnButton_Add(this);
 			
-			GUI.enabled = guiEnabled && BrowserUtility.anyFileSelected;
+			GUI.enabled = BrowserUtility.guiEnabled && BrowserUtility.anyFileSelected;
 		
 			if (GUILayout.Button("Remove", versionControlSkin.GetStyle("Buttons_Main_Remove"), GUILayout.Width(64), GUILayout.Height(64)))
 				BrowserUtility.OnButton_Remove(this);
 			
-			GUI.enabled = guiEnabled;
+			GUI.enabled = BrowserUtility.guiEnabled;
 		
 			if (GUILayout.Button("Fetch", versionControlSkin.GetStyle("Buttons_Main_Fetch"), GUILayout.Width(64), GUILayout.Height(64)))
 				BrowserUtility.OnButton_Fetch(this);
@@ -461,7 +458,7 @@ public class UVCBrowser : EditorWindow
 				BrowserUtility.OnButton_Tag(this);
 			
 			GUI.color = Color.white;
-			GUI.enabled = guiEnabled;
+			GUI.enabled = BrowserUtility.guiEnabled;
 		}
 		
 		GUILayout.FlexibleSpace();
@@ -475,7 +472,7 @@ public class UVCBrowser : EditorWindow
 				BrowserUtility.OnButton_Settings(this);
 			
 			GUI.color = Color.white;
-			GUI.enabled = guiEnabled;
+			GUI.enabled = BrowserUtility.guiEnabled;
 		}
 	}
 	
@@ -640,12 +637,12 @@ public class UVCBrowser : EditorWindow
 	
 	public void OnProcessStart()
 	{
-		guiEnabled = false;
+		BrowserUtility.guiEnabled = false;
 	}
 	
 	public void OnProcessStop(int errorCode, string stdout, string stderr)
 	{
-		guiEnabled = true;
+		BrowserUtility.guiEnabled = true;
 		Repaint();
 		if (errorCode == 0)
 		{
@@ -658,7 +655,7 @@ public class UVCBrowser : EditorWindow
 	
 	public void OnClosePopup()
 	{
-		guiEnabled = true;
+		BrowserUtility.guiEnabled = true;
 		Repaint();
 	}
 }

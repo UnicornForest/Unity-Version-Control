@@ -74,6 +74,10 @@ namespace ThinksquirrelSoftware.UnityVersionControl.UserInterface
 		private static int mCopiedFileCount;
 		private static int mUnmergedFileCount;
 		private static int mUntrackedFileCount;
+		
+		// GUI
+		private static bool mGuiEnabled = true;
+		
 		#endregion
 		
 		#region Public properties
@@ -221,6 +225,17 @@ namespace ThinksquirrelSoftware.UnityVersionControl.UserInterface
 				return mUntrackedFileCount;
 			}
 		}
+		public static bool guiEnabled
+		{
+			get
+			{
+				return mGuiEnabled;
+			}
+			set
+			{
+				mGuiEnabled = value;
+			}
+		}
 		#endregion
 		
 		#region Public methods
@@ -242,7 +257,7 @@ namespace ThinksquirrelSoftware.UnityVersionControl.UserInterface
 		/// </summary>
 		public static void Update()
 		{
-			if (mFrameCount % mUpdateRate == 0)
+			if (mFrameCount % mUpdateRate == 0 && mGuiEnabled)
 			{
 				UpdateTrees();	
 			}
