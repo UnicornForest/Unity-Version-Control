@@ -250,7 +250,7 @@ public class UVCBrowser : EditorWindow
 		
 			GUILayout.EndHorizontal();
 			
-			scrollPosition2 = GUILayout.BeginScrollView(scrollPosition2, false, true);
+			scrollPosition2 = GUILayout.BeginScrollView(scrollPosition2, false, false);
 			GUILayout.BeginVertical();
 			
 			GUILayout.BeginHorizontal();
@@ -302,7 +302,7 @@ public class UVCBrowser : EditorWindow
 		workingTreeFilter = (FileState)EditorGUILayout.EnumMaskField(workingTreeFilter, EditorStyles.toolbarPopup, GUILayout.Width(100));
 		GUILayout.EndHorizontal();
 		
-		scrollPosition3 = GUILayout.BeginScrollView(scrollPosition3, false, true);
+		scrollPosition3 = GUILayout.BeginScrollView(scrollPosition3, false, false);
 		GUILayout.BeginVertical();
 		
 		GUILayout.BeginHorizontal();
@@ -357,7 +357,7 @@ public class UVCBrowser : EditorWindow
 			GUILayout.Label("Diff", EditorStyles.toolbarButton, GUILayout.ExpandWidth(true));
 			GUILayout.EndHorizontal();
 			
-			scrollPosition4 = GUILayout.BeginScrollView(scrollPosition4, false, true);
+			scrollPosition4 = GUILayout.BeginScrollView(scrollPosition4, false, false);
 			EditorGUILayout.SelectableLabel(BrowserUtility.diffString, GUILayout.ExpandHeight(true));
 			GUILayout.EndScrollView();
 			
