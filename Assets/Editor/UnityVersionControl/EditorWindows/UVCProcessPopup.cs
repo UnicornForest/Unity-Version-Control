@@ -77,6 +77,10 @@ public class UVCProcessPopup : EditorWindow
 		var window = EditorWindow.CreateInstance<UVCProcessPopup>();
 		window.title = "Running Process";
 		window.process = process;
+		
+		//window.process.OutputDataReceived += window.OnOutputDataReceived;
+		//window.process.ErrorDataReceived += window.OnErrorDataReceived;
+		
 		if (process != null)
 		{
 			window.command = process.StartInfo.FileName + " " + process.StartInfo.Arguments;
@@ -103,41 +107,48 @@ public class UVCProcessPopup : EditorWindow
 	
 	void Update()
 	{
+		if (!exited)
+		{
+			//process.BeginErrorReadLine();
+			//process.BeginErrorReadLine();
+			
+			if (process.HasExited)
+			{
+				exited = true;
+				cancelString = "Done";
+				
+				output.Append("\aFFFFFFFF").Append(process.StandardOutput.ReadToEnd());
+				error.Append("\aFF0000FF").Append(process.StandardOutput.ReadToEnd());
+				
+				if (logErrors)
+				{		
+					if (process.ExitCode != 0)
+					{
+						exitOnCompletion = false;
+					}
+				}
+				
+				if (exitOnCompletion)
+					this.Close();
+				else
+					Repaint();
+			}
+		}
+	}
+	
+	void OnOutputDataReceived(object sendingProcess, System.Diagnostics.DataReceivedEventArgs outLine)
+	{
 		if (process != null)
 		{
-			string o = process.StandardOutput.ReadToEnd();
-			string e = process.StandardError.ReadToEnd();
-			
-			output.Append(o);
-			error.Append(e);
-			
-			if (o.Length > 0)
-				outerr.Append("\aFFFFFFFF").Append(o);
-			
-			if (e.Length > 0)
-				outerr.Append("\aFF0000FF").Append(e);
-			
-			if (!exited)
-			{
-				if (process.HasExited)
-				{
-					exited = true;
-					cancelString = "Done";
-					
-					if (logErrors)
-					{		
-						if (process.ExitCode != 0)
-						{
-							exitOnCompletion = false;
-						}
-					}
-					
-					if (exitOnCompletion)
-						this.Close();
-					else
-						Repaint();
-				}
-			}
+			output.Append("\aFFFFFFFF").Append(outLine);
+		}
+	}
+	
+	void OnErrorDataReceived(object sendingProcess, System.Diagnostics.DataReceivedEventArgs errLine)
+	{
+		if (process != null)
+		{
+			error.Append("\aFF0000FF").Append(errLine);
 		}
 	}
 	
