@@ -66,6 +66,9 @@ public class UVCBrowser : EditorWindow
 	private GUIStyle blankScrollbar;
 	private GUIStyle selectionStyle;
 	
+	// GUI content
+	private GUIContent versionControlTypeLogo;
+	
 	// Controls initialization of the GUI style
 	private bool initGUIStyle;
 	
@@ -99,6 +102,8 @@ public class UVCBrowser : EditorWindow
 	void LoadSkin()
 	{
 		versionControlSkin = EditorGUIUtility.isProSkin ? Resources.Load("_VersionControlSkin_Default_Dark") as GUISkin : Resources.Load("_VersionControlSkin_Default") as GUISkin;
+	
+		versionControlTypeLogo = VersionControl.versionControlType == VersionControlType.Git ? new GUIContent(Resources.Load("Logos_Git_Small") as Texture2D) : new GUIContent(Resources.Load("Logos_Hg_Small") as Texture2D);
 	}
 	
 	void Update()
@@ -178,7 +183,14 @@ public class UVCBrowser : EditorWindow
 		GUILayout.BeginHorizontal();
 		if (!string.IsNullOrEmpty(BrowserUtility.repositoryLocation))
 		{
-			GUILayout.Label("Project: " + BrowserUtility.repositoryShortName);
+			GUILayout.Label(versionControlTypeLogo);
+			
+			GUILayout.Space(10);
+			
+			GUILayout.Label(BrowserUtility.repositoryShortName);
+			
+			
+			
 			
 			GUILayout.FlexibleSpace();
 			
