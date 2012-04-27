@@ -280,7 +280,8 @@ public class UVCBrowser : EditorWindow
 		#region Resize widget
 		if (VersionControl.versionControlType == VersionControlType.Git && viewMode != BrowserViewMode.ArtistMode && showStagedFiles)
 		{
-			bool drag = GUIHelpers.ResizeWidget(drag1, ref verticalResizeWidget1, 60, position.height - 180, 6, true, position, this);
+			Rect r = new Rect(position.x, position.y - 220, position.width, position.height);
+			bool drag = GUIHelpers.ResizeWidget(drag1, ref verticalResizeWidget1, 60, position.height - 180, 6, true, r, this);
 			
 			if (drag != drag1)
 			{
@@ -597,6 +598,8 @@ public class UVCBrowser : EditorWindow
 				{
 					showStagedFiles = showStagedFilesTemp;
 					EditorPrefs.SetBool("UnityVersionControl.ShowStagedFiles", showStagedFiles);
+					verticalResizeWidget1 = Mathf.Clamp(verticalResizeWidget1, 60, position.height - 180);
+					Repaint();
 				}
 			}
 			bool showDiffTemp = GUILayout.Toggle(showDiff, "D", EditorStyles.toolbarButton, GUILayout.Width(40));
@@ -605,6 +608,8 @@ public class UVCBrowser : EditorWindow
 			{
 				showDiff = showDiffTemp;
 				EditorPrefs.SetBool("UnityVersionControl.ShowDiff", showDiff);
+				horizontalResizeWidget1 = Mathf.Clamp(horizontalResizeWidget1, 80, position.width - 80);
+				Repaint();
 			}	
 		}
 		GUILayout.EndHorizontal();
