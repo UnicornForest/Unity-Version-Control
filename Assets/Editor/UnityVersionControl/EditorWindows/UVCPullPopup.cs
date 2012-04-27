@@ -126,14 +126,14 @@ public class UVCPullPopup : EditorWindow
 			GUILayout.BeginHorizontal();
 			GUILayout.FlexibleSpace();
 			
-			if (GUILayout.Button("OK"))
+			if (GUILayout.Button("OK", GUILayout.Width(100)))
 			{	
 				this.Close();
 				
 				UVCProcessPopup.Init(VersionControl.Pull(CommandLine.EmptyHandler, BrowserUtility.remoteNames[currentRemoteIndex], currentBranches[currentBranchIndex], commit, includeOldMessages, commitFastForward, rebase), !showOutput, true, browser.OnProcessStop, true);
 			}
 			GUILayout.Space(10);
-			if (GUILayout.Button("Cancel"))
+			if (GUILayout.Button("Cancel", GUILayout.Width(100)))
 			{
 				this.Close();
 			}

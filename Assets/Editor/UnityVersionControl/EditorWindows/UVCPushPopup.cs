@@ -34,6 +34,7 @@ using System.Collections.Generic;
 /// </summary>
 /// TODO: Tracking and untracking branches
 /// TODO: Pushing to custom locations
+/// TODO: Pushing new branches
 public class UVCPushPopup : EditorWindow
 {
 	private UVCBrowser browser;
@@ -178,7 +179,7 @@ public class UVCPushPopup : EditorWindow
 			GUILayout.BeginHorizontal();
 			GUILayout.FlexibleSpace();
 			
-			if (GUILayout.Button("OK"))
+			if (GUILayout.Button("OK", GUILayout.Width(100)))
 			{	
 				this.Close();				
 				
@@ -198,7 +199,7 @@ public class UVCPushPopup : EditorWindow
 
 			}
 			GUILayout.Space(10);
-			if (GUILayout.Button("Cancel"))
+			if (GUILayout.Button("Cancel", GUILayout.Width(100)))
 			{
 				this.Close();
 			}

@@ -43,6 +43,7 @@ public class UVCProcessPopup : EditorWindow
 	private System.Action<int, string, string> exitCallback;
 	private string command;
 	private string cancelString = "Cancel";
+	private string inputText = string.Empty;
 	private bool exited = false;
 	private StringBuilder output = new StringBuilder();
 	private StringBuilder error = new StringBuilder();
@@ -157,6 +158,15 @@ public class UVCProcessPopup : EditorWindow
 			GUILayout.EndVertical();
 			
 			GUILayout.EndScrollView();
+			
+			GUILayout.BeginHorizontal();
+			inputText = GUILayout.TextField(inputText);
+			if (GUILayout.Button("Send", GUILayout.Width(100)))
+			{
+				process.StandardInput.WriteLine(inputText);
+				inputText = string.Empty;
+			}
+			GUILayout.EndHorizontal();
 			
 			if (exited)
 			{
