@@ -48,6 +48,7 @@ namespace ThinksquirrelSoftware.UnityVersionControl.Core
 			if (exitEventHandler != null)
 			{
 				process.EnableRaisingEvents = true;
+				process.StartInfo.RedirectStandardInput = true;
 				process.StartInfo.RedirectStandardOutput = true;
 				process.StartInfo.RedirectStandardError = true;
 				process.Exited += new System.EventHandler(exitEventHandler);

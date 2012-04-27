@@ -49,6 +49,7 @@ public class UVCProcessPopup : EditorWindow
 	private StringBuilder error = new StringBuilder();
 	private StringBuilder outerr = new StringBuilder();
 	private static GUIStyle labelStyle;
+	private bool doRepaint = false;
 	
 	/// <summary>
 	/// Initialize the process popup.
@@ -77,13 +78,13 @@ public class UVCProcessPopup : EditorWindow
 		var window = EditorWindow.CreateInstance<UVCProcessPopup>();
 		window.title = "Running Process";
 		window.process = process;
-		
-		//window.process.OutputDataReceived += window.OnOutputDataReceived;
-		//window.process.ErrorDataReceived += window.OnErrorDataReceived;
-		
 		if (process != null)
 		{
 			window.command = process.StartInfo.FileName + " " + process.StartInfo.Arguments;
+			window.process.OutputDataReceived += window.OnOutputDataReceived;
+			window.process.ErrorDataReceived += window.OnErrorDataReceived;
+			window.process.BeginOutputReadLine();
+			window.process.BeginErrorReadLine();
 		}
 #if !DEBUG		
 		window.exitOnCompletion = exitOnCompletion;
@@ -105,50 +106,63 @@ public class UVCProcessPopup : EditorWindow
 		position = new Rect(position.x, position.y, this.minSize.x, this.minSize.y);
 	}
 	
-	void Update()
-	{
-		if (!exited)
-		{
-			//process.BeginErrorReadLine();
-			//process.BeginErrorReadLine();
-			
-			if (process.HasExited)
-			{
-				exited = true;
-				cancelString = "Done";
-				
-				output.Append("\aFFFFFFFF").Append(process.StandardOutput.ReadToEnd());
-				error.Append("\aFF0000FF").Append(process.StandardOutput.ReadToEnd());
-				
-				if (logErrors)
-				{		
-					if (process.ExitCode != 0)
-					{
-						exitOnCompletion = false;
-					}
-				}
-				
-				if (exitOnCompletion)
-					this.Close();
-				else
-					Repaint();
-			}
-		}
-	}
-	
 	void OnOutputDataReceived(object sendingProcess, System.Diagnostics.DataReceivedEventArgs outLine)
 	{
 		if (process != null)
 		{
-			output.Append("\aFFFFFFFF").Append(outLine);
+			if (!string.IsNullOrEmpty(outLine.Data))
+			{
+				output.Append(System.Environment.NewLine).Append("\aFFFFFFFF").Append(outLine.Data);
+				outerr.Append(System.Environment.NewLine).Append("\aFFFFFFFF").Append(outLine.Data);
+				doRepaint = true;
+			}
 		}
 	}
 	
-	void OnErrorDataReceived(object sendingProcess, System.Diagnostics.DataReceivedEventArgs errLine)
+	void OnErrorDataReceived(object sendingProcess, System.Diagnostics.DataReceivedEventArgs outLine)
 	{
 		if (process != null)
 		{
-			error.Append("\aFF0000FF").Append(errLine);
+			if (!string.IsNullOrEmpty(outLine.Data))
+			{
+				error.Append(System.Environment.NewLine).Append("\aFF0000FF").Append(outLine.Data);
+				outerr.Append(System.Environment.NewLine).Append("\aFF0000FF").Append(outLine.Data);
+				doRepaint = true;
+			}
+		}
+	}
+	
+	void Update()
+	{
+		if (process != null)
+		{
+			if (doRepaint)
+			{
+				doRepaint = false;
+				Repaint();
+			}
+
+			if (!exited)
+			{
+				if (process.HasExited)
+				{
+					exited = true;
+					cancelString = "Done";
+					
+					if (logErrors)
+					{		
+						if (process.ExitCode != 0)
+						{
+							exitOnCompletion = false;
+						}
+					}
+					
+					if (exitOnCompletion)
+						this.Close();
+					else
+						Repaint();
+				}
+			}
 		}
 	}
 	
