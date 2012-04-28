@@ -23,6 +23,7 @@
 //    along with Unity Version Control.  If not, see <http://www.gnu.org/licenses/>.
 //
 using UnityEditor;
+using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -54,8 +55,8 @@ namespace ThinksquirrelSoftware.UnityVersionControl.UserInterface
 		private static int mLocalBranchIndex;
 		
 		// Staged files and working tree
-		private static Dictionary<string, VCFile> mStagedFiles = new Dictionary<string, VCFile>();
-		private static Dictionary<string, VCFile> mWorkingTree = new Dictionary<string, VCFile>();
+		private static SortedList<string, VCFile> mStagedFiles = new SortedList<string, VCFile>();
+		private static SortedList<string, VCFile> mWorkingTree = new SortedList<string, VCFile>();
 		private static bool mStagedFileSelected;
 		private static bool mWorkingTreeSelected;
 		private static bool mAnyFileSelected;
@@ -127,14 +128,14 @@ namespace ThinksquirrelSoftware.UnityVersionControl.UserInterface
 				mLocalBranchIndex = value;
 			}
 		}
-		public static Dictionary<string, VCFile> stagedFiles
+		public static SortedList<string, VCFile> stagedFiles
 		{
 			get
 			{
 				return mStagedFiles;
 			}
 		}
-		public static Dictionary<string, VCFile> workingTree
+		public static SortedList<string, VCFile> workingTree
 		{
 			get
 			{
@@ -455,11 +456,11 @@ namespace ThinksquirrelSoftware.UnityVersionControl.UserInterface
 		/// <summary>
 		/// Validates the selection.
 		/// </summary>
-		public static void ValidateSelection(VCFile file, bool toggle)
+		public static void ValidateSelection(VCFile file, bool toggle, int index, int lastSelectedIndex, List<VCFile> filteredList)
 		{
 			if (file != null)
 				file.selected = toggle;
-					
+			
 			foreach(var f in stagedFiles.Values)
 			{
 				if (f.selected)
@@ -478,26 +479,98 @@ namespace ThinksquirrelSoftware.UnityVersionControl.UserInterface
 				}
 			}
 			
+			bool ctrlPressed = false;
+			
+			if (Event.current != null)
+			{
+				if (Application.platform == RuntimePlatform.WindowsEditor)
+					ctrlPressed = Event.current.control;
+				else if (Application.platform == RuntimePlatform.OSXEditor)
+					ctrlPressed = Event.current.command;
+			}
+					
 			// Only run if selecting a file
 			if (file != null && toggle)
-			{
-				// Selecting a staged file with working tree files selected (not allowed)
-				if (stagedFiles.ContainsValue(file) && mWorkingTreeSelected)
-				{
-					foreach(var f in workingTree.Values)
+			{				
+				bool switched = false;
+				
+				if (stagedFiles.ContainsValue(file))
+				{		
+					if (!ctrlPressed)
 					{
-						f.selected = false;
+						foreach(var f in stagedFiles.Values)
+						{
+							if (f != file)
+								f.selected = false;
+						}	
 					}
-					mWorkingTreeSelected = false;
+					
+					// Selecting a staged file with working tree files selected (not allowed)
+					if (mWorkingTreeSelected)
+					{
+						switched = true;
+						
+						foreach(var f in workingTree.Values)
+						{
+							f.selected = false;
+						}
+						mWorkingTreeSelected = false;
+					}
 				}
-				// Selecting a working tree file with staged files selected (not allowed)
-				else if (workingTree.ContainsValue(file) && mStagedFileSelected)
-				{
-					foreach(var f in stagedFiles.Values)
+				else if (workingTree.ContainsValue(file))
+				{	
+					if (!ctrlPressed)
 					{
-						f.selected = false;
+						foreach(var f in workingTree.Values)
+						{
+							if (f != file)
+								f.selected = false;
+						}	
 					}
-					mStagedFileSelected = false;
+					
+					// Selecting a working tree file with staged files selected (not allowed)	
+					if (mStagedFileSelected)
+					{
+						switched = true;
+						
+						foreach(var f in stagedFiles.Values)
+						{
+							f.selected = false;
+						}
+						mStagedFileSelected = false;
+					}
+				}
+				
+				// Detect shift clicks
+				if (lastSelectedIndex != -1)
+				{
+					if (Event.current != null && !switched)
+					{
+						if (Event.current.shift)
+						{
+							bool goBackwards = lastSelectedIndex > index;
+							if (goBackwards)
+							{
+								for(int i = lastSelectedIndex; i >= index; i--)
+								{
+									if (i < filteredList.Count)
+									{
+										filteredList[i].selected = true;
+									}
+								}
+							}
+							else
+							{
+								for(int i = lastSelectedIndex; i <= index; i++)
+								{
+									if (i < filteredList.Count)
+									{
+										filteredList[i].selected = true;
+									}
+								}
+							}
+						}
+					}
 				}
 			}
 			
@@ -673,7 +746,7 @@ namespace ThinksquirrelSoftware.UnityVersionControl.UserInterface
 			#endregion
 			
 			// Validate selection
-			ValidateSelection(null, false);
+			ValidateSelection(null, false, -1, -1, null);
 			
 			// Update stats
 			UpdateStats();

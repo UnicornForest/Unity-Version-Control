@@ -75,6 +75,9 @@ public class UVCBrowser : EditorWindow
 	// GUISkin
 	private GUISkin versionControlSkin;
 	
+	// The last selected file index
+	private int lastSelectedIndex;
+	
 	[MenuItem ("Version Control/Browser")]
 	static void Init()
 	{
@@ -270,13 +273,12 @@ public class UVCBrowser : EditorWindow
 			GUI.backgroundColor = Color.white;
 			GUILayout.EndHorizontal();
 			
-			var keys1 = new List<string>(BrowserUtility.stagedFiles.Keys);
-			int i = 0;
-			foreach(var file in keys1)
+			var files1 = new List<VCFile>(BrowserUtility.stagedFiles.Values);
+			FilterFileList(files1, true);
+			
+			for(int i = 0; i < files1.Count; i++)
 			{
-				DisplayFile(BrowserUtility.stagedFiles[file], ref i, true);
-				
-				i++;
+				DisplayFile(files1[i], i, true, files1);
 			}
 			
 			GUILayout.EndVertical();
@@ -325,13 +327,12 @@ public class UVCBrowser : EditorWindow
 		GUI.backgroundColor = Color.white;
 		GUILayout.EndHorizontal();
 		
-		var keys2 = new List<string>(BrowserUtility.workingTree.Keys);
-		int j = 0;
-		foreach(var file in keys2)
+		var files2 = new List<VCFile>(BrowserUtility.workingTree.Values);
+		FilterFileList(files2, false);
+		
+		for(int i = 0; i < files2.Count; i++)
 		{
-			DisplayFile(BrowserUtility.workingTree[file], ref j, false);
-			
-			j++;
+			DisplayFile(files2[i], i, false, files2);
 		}
 		
 		GUILayout.EndVertical();
@@ -476,26 +477,32 @@ public class UVCBrowser : EditorWindow
 		}
 	}
 	
-	void DisplayFile(VCFile file, ref int index, bool staged)
+	void FilterFileList(List<VCFile> fileList, bool staged)
 	{
-		// Check filter
-		if (staged)
+		for(int i = fileList.Count - 1; i >= 0; i--)
 		{
-			if (!stagedFilesFilter.Has(file.fileState1))
+			// Check filter
+			if (staged)
 			{
-				index--;
-				return;
+				if (!stagedFilesFilter.Has(fileList[i].fileState1))
+				{
+					fileList.RemoveAt(i);
+					continue;
+				}
+			}
+			else
+			{
+				if (!workingTreeFilter.Has(fileList[i].fileState2))
+				{
+					fileList.RemoveAt(i);
+					continue;
+				}
 			}
 		}
-		else
-		{
-			if (!workingTreeFilter.Has(file.fileState2))
-			{
-				index--;
-				return;
-			}
-		}
-		
+	}
+	
+	void DisplayFile(VCFile file, int index, bool staged, List<VCFile> filteredList)
+	{	
 		if (index % 2 == 0)
 			GUI.backgroundColor = Color.gray;
 		else
@@ -518,15 +525,21 @@ public class UVCBrowser : EditorWindow
 		
 		if (viewMode != BrowserViewMode.ArtistMode && t2 != file.selected)
 		{
-			BrowserUtility.ValidateSelection(file, t2);
+			BrowserUtility.ValidateSelection(file, t2, index, lastSelectedIndex, filteredList);
+			if (file.selected)
+			{
+				lastSelectedIndex = index;
+			}
 		}
 		else if (t3 != file.selected)
 		{
-			BrowserUtility.ValidateSelection(file, t3);
+			BrowserUtility.ValidateSelection(file, t3, index, lastSelectedIndex, filteredList);
+			lastSelectedIndex = file.selected ? index : -1;
 		}
 		else if (t1 != file.selected)
 		{
-			BrowserUtility.ValidateSelection(file, t1);
+			BrowserUtility.ValidateSelection(file, t1, index, lastSelectedIndex, filteredList);
+			lastSelectedIndex = file.selected ? index : -1;
 		}	
 	}
 	
@@ -657,5 +670,14 @@ public class UVCBrowser : EditorWindow
 	{
 		BrowserUtility.guiEnabled = true;
 		Repaint();
+	}
+	
+	void OnProjectChange()
+	{
+		if (BrowserUtility.guiEnabled)
+		{
+			BrowserUtility.ForceUpdate();
+			Repaint();
+		}
 	}
 }
