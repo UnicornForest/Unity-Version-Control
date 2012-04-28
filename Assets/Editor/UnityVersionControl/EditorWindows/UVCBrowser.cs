@@ -289,6 +289,9 @@ public class UVCBrowser : EditorWindow
 			GUILayout.EndScrollView();
 			
 			GUILayout.EndVertical();
+			
+			BrowserUtility.ProcessArrowKeyEvents(ref lastSelectedIndex, filteredStagedFiles, filteredWorkingTree);
+
 		}
 		#endregion
 		
@@ -390,8 +393,6 @@ public class UVCBrowser : EditorWindow
 		#endregion
 		
 		GUI.enabled = BrowserUtility.guiEnabled;
-		
-		BrowserUtility.ProcessArrowKeyEvents(ref lastSelectedIndex, filteredStagedFiles, filteredWorkingTree);
 	}
 	
 	void DisplayButtons()

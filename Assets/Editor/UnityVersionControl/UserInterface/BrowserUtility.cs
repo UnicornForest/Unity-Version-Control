@@ -44,6 +44,11 @@ namespace ThinksquirrelSoftware.UnityVersionControl.UserInterface
 		private static int mFrameCount;
 		private const int mUpdateRate = 250;
 		
+		// Keyboard delays
+		private const int mKeyboardDelay = 5;
+		private const int mKeyboardRepeatRate = 1;
+		private static int mKeyboardTimer = 0;
+		
 		/// Repository location
 		private static string mRepositoryLocation;
 		private static string mRepositoryShortName;
@@ -587,50 +592,63 @@ namespace ThinksquirrelSoftware.UnityVersionControl.UserInterface
 		{
 			if (Event.current != null && lastSelectedIndex != -1)
 			{
-				if (Event.current.type == EventType.KeyDown)
+				if (Event.current.isKey)
 				{
-					if (Event.current.keyCode == KeyCode.UpArrow)
+					if (Event.current.type == EventType.KeyUp)
 					{
-						if (mStagedFileSelected)
+						Event.current.Use();
+						mKeyboardTimer = 0;
+					}
+					else if (Event.current.keyCode == KeyCode.UpArrow)
+					{
+						if (mKeyboardTimer == 0 || (mKeyboardTimer >= mKeyboardDelay && (mKeyboardTimer % mKeyboardRepeatRate == 0)))
 						{
-							if (lastSelectedIndex > 0)
+							if (mStagedFileSelected)
 							{
-								ValidateSelection(filteredStagedFiles[lastSelectedIndex - 1], true, lastSelectedIndex - 1, lastSelectedIndex, filteredStagedFiles);
-								lastSelectedIndex--;
-							}	
-						}
-						else if (mWorkingTreeSelected)
-						{
-							if (lastSelectedIndex > 0)
+								if (lastSelectedIndex > 0)
+								{
+									ValidateSelection(filteredStagedFiles[lastSelectedIndex - 1], true, lastSelectedIndex - 1, lastSelectedIndex, filteredStagedFiles);
+									lastSelectedIndex--;
+								}	
+							}
+							else if (mWorkingTreeSelected)
 							{
-								ValidateSelection(filteredWorkingTree[lastSelectedIndex - 1], true, lastSelectedIndex - 1, lastSelectedIndex, filteredWorkingTree);	
-								lastSelectedIndex--;
+								if (lastSelectedIndex > 0)
+								{
+									ValidateSelection(filteredWorkingTree[lastSelectedIndex - 1], true, lastSelectedIndex - 1, lastSelectedIndex, filteredWorkingTree);	
+									lastSelectedIndex--;
+								}
 							}
 						}
 						
 						Event.current.Use();
+						mKeyboardTimer++;
 					}
 					else if (Event.current.keyCode == KeyCode.DownArrow)
 					{
-						if (mStagedFileSelected)
+						if (mKeyboardTimer == 0 || (mKeyboardTimer >= mKeyboardDelay && (mKeyboardTimer % mKeyboardRepeatRate == 0)))
 						{
-							if (lastSelectedIndex < filteredStagedFiles.Count - 1)
+							if (mStagedFileSelected)
 							{
-								ValidateSelection(filteredStagedFiles[lastSelectedIndex + 1], true, lastSelectedIndex + 1, lastSelectedIndex, filteredStagedFiles);
-								lastSelectedIndex++;
+								if (lastSelectedIndex < filteredStagedFiles.Count - 1)
+								{
+									ValidateSelection(filteredStagedFiles[lastSelectedIndex + 1], true, lastSelectedIndex + 1, lastSelectedIndex, filteredStagedFiles);
+									lastSelectedIndex++;
+								}
+									
 							}
-								
-						}
-						else if (mWorkingTreeSelected)
-						{
-							if (lastSelectedIndex < filteredWorkingTree.Count - 1)
+							else if (mWorkingTreeSelected)
 							{
-								ValidateSelection(filteredWorkingTree[lastSelectedIndex + 1], true, lastSelectedIndex + 1, lastSelectedIndex, filteredWorkingTree);
-								lastSelectedIndex++;
+								if (lastSelectedIndex < filteredWorkingTree.Count - 1)
+								{
+									ValidateSelection(filteredWorkingTree[lastSelectedIndex + 1], true, lastSelectedIndex + 1, lastSelectedIndex, filteredWorkingTree);
+									lastSelectedIndex++;
+								}
 							}
 						}
 						
 						Event.current.Use();
+						mKeyboardTimer++;
 					}
 				}
 			}
