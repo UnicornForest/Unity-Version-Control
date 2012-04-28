@@ -289,9 +289,6 @@ public class UVCBrowser : EditorWindow
 			GUILayout.EndScrollView();
 			
 			GUILayout.EndVertical();
-			
-			BrowserUtility.ProcessArrowKeyEvents(ref lastSelectedIndex, filteredStagedFiles, filteredWorkingTree);
-
 		}
 		#endregion
 		
@@ -393,6 +390,11 @@ public class UVCBrowser : EditorWindow
 		#endregion
 		
 		GUI.enabled = BrowserUtility.guiEnabled;
+		
+		if (BrowserUtility.guiEnabled)
+		{
+			BrowserUtility.ProcessKeyboardEvents(ref lastSelectedIndex, filteredStagedFiles, filteredWorkingTree);
+		}
 	}
 	
 	void DisplayButtons()
@@ -534,7 +536,7 @@ public class UVCBrowser : EditorWindow
 		
 		if (viewMode != BrowserViewMode.ArtistMode && t2 != file.selected)
 		{
-			BrowserUtility.ValidateSelection(file, t2, index, lastSelectedIndex, filteredList);
+			BrowserUtility.ValidateSelection(file, t2, false, index, lastSelectedIndex, filteredList);
 			if (file.selected)
 			{
 				lastSelectedIndex = index;
@@ -542,12 +544,12 @@ public class UVCBrowser : EditorWindow
 		}
 		else if (t3 != file.selected)
 		{
-			BrowserUtility.ValidateSelection(file, t3, index, lastSelectedIndex, filteredList);
+			BrowserUtility.ValidateSelection(file, t3, false, index, lastSelectedIndex, filteredList);
 			lastSelectedIndex = file.selected ? index : -1;
 		}
 		else if (t1 != file.selected)
 		{
-			BrowserUtility.ValidateSelection(file, t1, index, lastSelectedIndex, filteredList);
+			BrowserUtility.ValidateSelection(file, t1, false, index, lastSelectedIndex, filteredList);
 			lastSelectedIndex = file.selected ? index : -1;
 		}	
 	}

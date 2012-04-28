@@ -461,7 +461,7 @@ namespace ThinksquirrelSoftware.UnityVersionControl.UserInterface
 		/// <summary>
 		/// Validates the selection.
 		/// </summary>
-		public static void ValidateSelection(VCFile file, bool toggle, int index, int lastSelectedIndex, List<VCFile> filteredList)
+		public static void ValidateSelection(VCFile file, bool toggle, bool overrideMultiSelect, int index, int lastSelectedIndex, List<VCFile> filteredList)
 		{
 			if (file != null)
 				file.selected = toggle;
@@ -484,16 +484,19 @@ namespace ThinksquirrelSoftware.UnityVersionControl.UserInterface
 				}
 			}
 			
-			bool ctrlPressed = false;
+			bool ctrlPressed = false || overrideMultiSelect;
 			
-			if (Event.current != null)
+			if (!overrideMultiSelect)
 			{
-				if (Application.platform == RuntimePlatform.WindowsEditor)
-					ctrlPressed = Event.current.control;
-				else if (Application.platform == RuntimePlatform.OSXEditor)
-					ctrlPressed = Event.current.command;
+				if (Event.current != null)
+				{
+					if (Application.platform == RuntimePlatform.WindowsEditor)
+						ctrlPressed = Event.current.control;
+					else if (Application.platform == RuntimePlatform.OSXEditor)
+						ctrlPressed = Event.current.command;
+				}
 			}
-					
+			
 			// Only run if selecting a file
 			if (file != null && toggle)
 			{				
@@ -586,19 +589,60 @@ namespace ThinksquirrelSoftware.UnityVersionControl.UserInterface
 		}
 		
 		/// <summary>
-		/// Processes up and down arrow key events.
+		/// Processes various keyboard events.
 		/// </summary>
-		public static void ProcessArrowKeyEvents(ref int lastSelectedIndex, List<VCFile> filteredStagedFiles, List<VCFile> filteredWorkingTree)
+		public static void ProcessKeyboardEvents(ref int lastSelectedIndex, List<VCFile> filteredStagedFiles, List<VCFile> filteredWorkingTree)
 		{
 			if (Event.current != null && lastSelectedIndex != -1)
 			{
-				if (Event.current.isKey)
+				// Commands
+				if (Event.current.type == EventType.ValidateCommand)
 				{
-					if (Event.current.type == EventType.KeyUp)
+					if (Event.current.commandName == "SelectAll")
 					{
 						Event.current.Use();
-						mKeyboardTimer = 0;
 					}
+				}
+				else if (Event.current.type == EventType.ExecuteCommand)
+				{
+					// Select all
+					if (Event.current.commandName == "SelectAll")
+					{	
+						if (mStagedFileSelected)
+						{
+							foreach(var file in filteredStagedFiles)
+							{
+								file.selected = true;
+							}
+							lastSelectedIndex = filteredStagedFiles.Count - 1;
+							
+							Event.current.Use();
+						}
+						else if (mWorkingTreeSelected)
+						{
+							foreach(var file in filteredWorkingTree)
+							{
+								file.selected = true;
+							}
+							lastSelectedIndex = filteredWorkingTree.Count - 1;
+							
+							Event.current.Use();
+						}
+					}
+				}
+				else if (Event.current.isKey)
+				{
+					// Released a key
+					if (Event.current.type == EventType.KeyUp)
+					{
+						// Released an arrow key
+						if (Event.current.keyCode == KeyCode.UpArrow || Event.current.keyCode == KeyCode.DownArrow)
+						{
+							Event.current.Use();
+							mKeyboardTimer = 0;
+						}
+					}
+					// Up and down
 					else if (Event.current.keyCode == KeyCode.UpArrow)
 					{
 						if (mKeyboardTimer == 0 || (mKeyboardTimer >= mKeyboardDelay && (mKeyboardTimer % mKeyboardRepeatRate == 0)))
@@ -607,7 +651,7 @@ namespace ThinksquirrelSoftware.UnityVersionControl.UserInterface
 							{
 								if (lastSelectedIndex > 0)
 								{
-									ValidateSelection(filteredStagedFiles[lastSelectedIndex - 1], true, lastSelectedIndex - 1, lastSelectedIndex, filteredStagedFiles);
+									ValidateSelection(filteredStagedFiles[lastSelectedIndex - 1], true, false, lastSelectedIndex - 1, lastSelectedIndex, filteredStagedFiles);
 									lastSelectedIndex--;
 								}	
 							}
@@ -615,7 +659,7 @@ namespace ThinksquirrelSoftware.UnityVersionControl.UserInterface
 							{
 								if (lastSelectedIndex > 0)
 								{
-									ValidateSelection(filteredWorkingTree[lastSelectedIndex - 1], true, lastSelectedIndex - 1, lastSelectedIndex, filteredWorkingTree);	
+									ValidateSelection(filteredWorkingTree[lastSelectedIndex - 1], true, false, lastSelectedIndex - 1, lastSelectedIndex, filteredWorkingTree);	
 									lastSelectedIndex--;
 								}
 							}
@@ -632,7 +676,7 @@ namespace ThinksquirrelSoftware.UnityVersionControl.UserInterface
 							{
 								if (lastSelectedIndex < filteredStagedFiles.Count - 1)
 								{
-									ValidateSelection(filteredStagedFiles[lastSelectedIndex + 1], true, lastSelectedIndex + 1, lastSelectedIndex, filteredStagedFiles);
+									ValidateSelection(filteredStagedFiles[lastSelectedIndex + 1], true, false, lastSelectedIndex + 1, lastSelectedIndex, filteredStagedFiles);
 									lastSelectedIndex++;
 								}
 									
@@ -641,7 +685,7 @@ namespace ThinksquirrelSoftware.UnityVersionControl.UserInterface
 							{
 								if (lastSelectedIndex < filteredWorkingTree.Count - 1)
 								{
-									ValidateSelection(filteredWorkingTree[lastSelectedIndex + 1], true, lastSelectedIndex + 1, lastSelectedIndex, filteredWorkingTree);
+									ValidateSelection(filteredWorkingTree[lastSelectedIndex + 1], true, false, lastSelectedIndex + 1, lastSelectedIndex, filteredWorkingTree);
 									lastSelectedIndex++;
 								}
 							}
@@ -820,7 +864,7 @@ namespace ThinksquirrelSoftware.UnityVersionControl.UserInterface
 			#endregion
 			
 			// Validate selection
-			ValidateSelection(null, false, -1, -1, null);
+			ValidateSelection(null, false, false, -1, -1, null);
 			
 			// Update stats
 			UpdateStats();
