@@ -579,6 +579,62 @@ namespace ThinksquirrelSoftware.UnityVersionControl.UserInterface
 			CacheSelectedFiles();
 			UpdateDiffPanel();
 		}
+		
+		/// <summary>
+		/// Processes up and down arrow key events.
+		/// </summary>
+		public static void ProcessArrowKeyEvents(ref int lastSelectedIndex, List<VCFile> filteredStagedFiles, List<VCFile> filteredWorkingTree)
+		{
+			if (Event.current != null && lastSelectedIndex != -1)
+			{
+				if (Event.current.type == EventType.KeyDown)
+				{
+					if (Event.current.keyCode == KeyCode.UpArrow)
+					{
+						if (mStagedFileSelected)
+						{
+							if (lastSelectedIndex > 0)
+							{
+								ValidateSelection(filteredStagedFiles[lastSelectedIndex - 1], true, lastSelectedIndex - 1, lastSelectedIndex, filteredStagedFiles);
+								lastSelectedIndex--;
+							}	
+						}
+						else if (mWorkingTreeSelected)
+						{
+							if (lastSelectedIndex > 0)
+							{
+								ValidateSelection(filteredWorkingTree[lastSelectedIndex - 1], true, lastSelectedIndex - 1, lastSelectedIndex, filteredWorkingTree);	
+								lastSelectedIndex--;
+							}
+						}
+						
+						Event.current.Use();
+					}
+					else if (Event.current.keyCode == KeyCode.DownArrow)
+					{
+						if (mStagedFileSelected)
+						{
+							if (lastSelectedIndex < filteredStagedFiles.Count - 1)
+							{
+								ValidateSelection(filteredStagedFiles[lastSelectedIndex + 1], true, lastSelectedIndex + 1, lastSelectedIndex, filteredStagedFiles);
+								lastSelectedIndex++;
+							}
+								
+						}
+						else if (mWorkingTreeSelected)
+						{
+							if (lastSelectedIndex < filteredWorkingTree.Count - 1)
+							{
+								ValidateSelection(filteredWorkingTree[lastSelectedIndex + 1], true, lastSelectedIndex + 1, lastSelectedIndex, filteredWorkingTree);
+								lastSelectedIndex++;
+							}
+						}
+						
+						Event.current.Use();
+					}
+				}
+			}
+		}
 		#endregion
 		
 		#region Private methods

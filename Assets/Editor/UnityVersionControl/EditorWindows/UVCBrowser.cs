@@ -61,6 +61,8 @@ public class UVCBrowser : EditorWindow
 	// Filters
 	private FileState stagedFilesFilter = (FileState)1;
 	private FileState workingTreeFilter = (FileState)1;
+	private List<VCFile> filteredStagedFiles = new List<VCFile>();
+	private List<VCFile> filteredWorkingTree = new List<VCFile>();
 	
 	// GUI styles
 	private GUIStyle blankScrollbar;
@@ -273,12 +275,14 @@ public class UVCBrowser : EditorWindow
 			GUI.backgroundColor = Color.white;
 			GUILayout.EndHorizontal();
 			
-			var files1 = new List<VCFile>(BrowserUtility.stagedFiles.Values);
-			FilterFileList(files1, true);
+			filteredStagedFiles.Clear();
+			filteredStagedFiles.AddRange(BrowserUtility.stagedFiles.Values);
 			
-			for(int i = 0; i < files1.Count; i++)
+			FilterFileList(filteredStagedFiles, true);
+			
+			for(int i = 0; i < filteredStagedFiles.Count; i++)
 			{
-				DisplayFile(files1[i], i, true, files1);
+				DisplayFile(filteredStagedFiles[i], i, true, filteredStagedFiles);
 			}
 			
 			GUILayout.EndVertical();
@@ -327,12 +331,14 @@ public class UVCBrowser : EditorWindow
 		GUI.backgroundColor = Color.white;
 		GUILayout.EndHorizontal();
 		
-		var files2 = new List<VCFile>(BrowserUtility.workingTree.Values);
-		FilterFileList(files2, false);
+		filteredWorkingTree.Clear();
+		filteredWorkingTree.AddRange(BrowserUtility.workingTree.Values);
 		
-		for(int i = 0; i < files2.Count; i++)
+		FilterFileList(filteredWorkingTree, false);
+		
+		for(int i = 0; i < filteredWorkingTree.Count; i++)
 		{
-			DisplayFile(files2[i], i, false, files2);
+			DisplayFile(filteredWorkingTree[i], i, false, filteredWorkingTree);
 		}
 		
 		GUILayout.EndVertical();
@@ -384,6 +390,8 @@ public class UVCBrowser : EditorWindow
 		#endregion
 		
 		GUI.enabled = BrowserUtility.guiEnabled;
+		
+		BrowserUtility.ProcessArrowKeyEvents(ref lastSelectedIndex, filteredStagedFiles, filteredWorkingTree);
 	}
 	
 	void DisplayButtons()
