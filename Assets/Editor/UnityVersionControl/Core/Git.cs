@@ -93,7 +93,8 @@ namespace ThinksquirrelSoftware.UnityVersionControl.Core
 			
 			if (gitProcess.ExitCode == 0)
 			{
-				return gitProcess.StandardOutput.ReadToEnd();	
+				string output = gitProcess.StandardOutput.ReadToEnd();
+				return output.Substring(0, output.Length - 1);	
 			}
 			else
 			{

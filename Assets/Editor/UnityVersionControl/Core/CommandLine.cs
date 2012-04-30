@@ -22,6 +22,7 @@
 //    You should have received a copy of the GNU General Public License
 //    along with Unity Version Control.  If not, see <http://www.gnu.org/licenses/>.
 //
+using UnityEngine;
 using System.Diagnostics;
 
 namespace ThinksquirrelSoftware.UnityVersionControl.Core
@@ -42,11 +43,10 @@ namespace ThinksquirrelSoftware.UnityVersionControl.Core
 			process.StartInfo.FileName = fileName;
 			process.StartInfo.Arguments = args;
 			
-			process.StartInfo.UseShellExecute = false;
-			process.StartInfo.CreateNoWindow = true;
-			
 			if (exitEventHandler != null)
 			{
+				process.StartInfo.UseShellExecute = false;
+				process.StartInfo.CreateNoWindow = true;
 				process.EnableRaisingEvents = true;
 				process.StartInfo.RedirectStandardInput = true;
 				process.StartInfo.RedirectStandardOutput = true;
@@ -67,5 +67,24 @@ namespace ThinksquirrelSoftware.UnityVersionControl.Core
 			// Empty process handler. Used in order to get standard output and error streams.
 		}
 		
+		/// <summary>
+		/// Opens the file in the user's specified text editor (This can be changed in the Version Control preference window).
+		/// </summary>
+		/// <param name='path'>
+		/// Path to the file to open.
+		/// </param>
+		public static Process OpenFileInTextEditor(string path)
+		{
+			if (Application.platform == RuntimePlatform.WindowsEditor)
+			{
+				return RunCommand(UVCPreferences.GetDefaultTextEditor(), path, null);
+			}
+			else if (Application.platform == RuntimePlatform.OSXEditor)
+			{
+				return RunCommand("open", "-a " + UVCPreferences.GetDefaultTextEditor() + " \"" + path + '"', null);	
+			}
+			
+			return null;
+		}
 	}
 }
