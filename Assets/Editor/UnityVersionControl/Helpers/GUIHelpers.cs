@@ -160,6 +160,7 @@ namespace ThinksquirrelSoftware.UnityVersionControl.Helpers
 		/// <param name='alignment'>
 		/// Alignment.
 		/// </param>
+		/// TODO: Causes a layout error if the text ends in a newLine.
 		public static void FormattedLabel(string text, Font normalFont, Font boldFont, Font italicFont, TextAlignment alignment )
 		{
 		    int     i1 = 0, i2 = 0;
