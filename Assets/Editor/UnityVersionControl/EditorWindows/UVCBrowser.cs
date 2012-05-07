@@ -477,14 +477,8 @@ public class UVCBrowser : EditorWindow
 		
 		if (viewMode != BrowserViewMode.ArtistMode)
 		{
-			GUI.enabled = false;
-			GUI.color *= .75f;
-			
 			if (GUILayout.Button("Settings", versionControlSkin.GetStyle("Buttons_Main_Settings"), GUILayout.Width(64), GUILayout.Height(64)))
 				BrowserUtility.OnButton_Settings(this);
-			
-			GUI.color = Color.white;
-			GUI.enabled = BrowserUtility.guiEnabled;
 		}
 	}
 	
@@ -624,8 +618,10 @@ public class UVCBrowser : EditorWindow
 		{
 			if (VersionControl.versionControlType == VersionControlType.Git)
 			{
+				GUI.color = BrowserUtility.stagedFiles.Count > 0 ? Color.red : Color.white;
 				string stagedString = BrowserUtility.stagedFiles.Count > 0 ? "S (" + BrowserUtility.stagedFiles.Count + ")" : "S";
 				bool showStagedFilesTemp = GUILayout.Toggle(showStagedFiles, stagedString, EditorStyles.toolbarButton, GUILayout.Width(40));
+				GUI.color = Color.white;
 				
 				if (showStagedFilesTemp != showStagedFiles)
 				{
@@ -659,7 +655,7 @@ public class UVCBrowser : EditorWindow
 		}
 	}
 	
-	public void OnProcessStart()
+	public void DisableGUI()
 	{
 		BrowserUtility.guiEnabled = false;
 	}
@@ -677,7 +673,7 @@ public class UVCBrowser : EditorWindow
 		AssetDatabase.Refresh();
 	}
 	
-	public void OnClosePopup()
+	public void EnableGUI()
 	{
 		BrowserUtility.guiEnabled = true;
 		Repaint();

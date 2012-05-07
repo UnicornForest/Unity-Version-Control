@@ -257,7 +257,7 @@ public class UVCBranchPopup : EditorWindow
 	{
 		if (browser)
 		{
-			browser.OnClosePopup();
+			browser.EnableGUI();
 		}
 	}
 }

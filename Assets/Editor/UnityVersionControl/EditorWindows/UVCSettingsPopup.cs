@@ -1,5 +1,5 @@
-// Fetch Popup Editor Window
-// UVCFetchPopup.cs
+// Settings Popup Editor Window
+// UVCSettingsPopup.cs
 // Unity Version Control
 //  
 // Authors:
@@ -30,27 +30,22 @@ using ThinksquirrelSoftware.UnityVersionControl.Helpers;
 using System.Collections.Generic;
 
 /// <summary>
-/// The fetch popup editor window.
+/// The settings popup editor window.
 /// </summary>
-/// TODO: Fetching from a remote that isn't being tracked
-public class UVCFetchPopup : EditorWindow
+public class UVCSettingsPopup : EditorWindow
 {
 	private UVCBrowser browser;
-	private bool allRemotes = true;
-	private bool prune = false;
-	private bool showOutput = false;
-	private int currentRemoteIndex;
-	
+
 	/// <summary>
-	/// Initialize the fetch popup.
+	/// Initialize the settings popup.
 	/// </summary>
 	/// <param name='browser'>
 	/// The main browser instance.
 	/// </param>
 	public static void Init(UVCBrowser browser)
 	{
-		var window = EditorWindow.CreateInstance<UVCFetchPopup>();
-		window.title = "Fetch";
+		var window = EditorWindow.CreateInstance<UVCSettingsPopup>();
+		window.title = "Settings";
 		window.browser = browser;
 		window.ShowUtility();
 	}
@@ -65,36 +60,16 @@ public class UVCFetchPopup : EditorWindow
 	{
 		if (browser != null)
 		{
-			allRemotes = GUILayout.Toggle(allRemotes, "Fetch from all remotes");
+			if (GUILayout.Button("Open repository ignore file"))
+				CommandLine.OpenFileInTextEditor(VersionControl.RepositoryIgnoreFile());
 			
-			GUI.enabled = !allRemotes;
-			
-			currentRemoteIndex = EditorGUILayout.Popup("Fetch from", currentRemoteIndex, BrowserUtility.remoteNames);
-				
-			GUI.enabled = true;
-			
-			prune = GUILayout.Toggle(prune, "Prune tracking branches no longer present on remote(s)");
-			showOutput = GUILayout.Toggle(showOutput, "Show output");
+			GUILayout.FlexibleSpace();
 			
 			GUILayout.BeginHorizontal();
 			GUILayout.FlexibleSpace();
 			
 			if (GUILayout.Button("OK", GUILayout.Width(100)))
 			{	
-				this.Close();
-				
-				if (allRemotes)
-				{
-					UVCProcessPopup.Init(VersionControl.Fetch(CommandLine.EmptyHandler, "--all", prune), !showOutput, true, browser.OnProcessStop, true);
-				}
-				else
-				{
-					UVCProcessPopup.Init(VersionControl.Fetch(CommandLine.EmptyHandler, BrowserUtility.remoteNames[currentRemoteIndex], prune), !showOutput, true, browser.OnProcessStop, true);
-				}
-			}
-			GUILayout.Space(10);
-			if (GUILayout.Button("Cancel", GUILayout.Width(100)))
-			{
 				this.Close();
 			}
 			GUILayout.FlexibleSpace();

@@ -216,7 +216,7 @@ public class UVCPushPopup : EditorWindow
 	{
 		if (browser)
 		{
-			browser.OnClosePopup();
+			browser.EnableGUI();
 		}
 	}
 }

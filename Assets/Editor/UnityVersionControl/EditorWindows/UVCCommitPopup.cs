@@ -157,7 +157,7 @@ public class UVCCommitPopup : EditorWindow
 	{
 		if (browser)
 		{
-			browser.OnClosePopup();
+			browser.EnableGUI();
 		}
 	}
 }

@@ -66,6 +66,21 @@ namespace ThinksquirrelSoftware.UnityVersionControl.Core
 		}
 		
 		/// <summary>
+		/// Gets the repository ignore file.
+		/// </summary>
+		public static string RepositoryIgnoreFile()
+		{
+			switch(mVersionControlType)
+			{
+			case VersionControlType.Git:
+				return Git.RepositoryLocation() + System.IO.Path.DirectorySeparatorChar + ".gitignore";
+			case VersionControlType.Hg:
+				return Git.RepositoryLocation() + System.IO.Path.DirectorySeparatorChar + ".hgignore";
+			}
+			
+			return string.Empty;
+		}
+		/// <summary>
 		/// Checks to see if the current project has a repository.
 		/// </summary>
 		/// <returns>

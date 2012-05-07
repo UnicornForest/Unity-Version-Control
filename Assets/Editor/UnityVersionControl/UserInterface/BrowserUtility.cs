@@ -286,7 +286,7 @@ namespace ThinksquirrelSoftware.UnityVersionControl.UserInterface
 		/// TODO: Implement button
 		public static void OnButton_Init(UVCBrowser browser)
 		{
-			browser.OnProcessStart();
+			browser.DisableGUI();
 			UVCProcessPopup.Init(VersionControl.Initialize(CommandLine.EmptyHandler), true, true, browser.OnProcessStop, true);
 		}
 		
@@ -296,7 +296,7 @@ namespace ThinksquirrelSoftware.UnityVersionControl.UserInterface
 		/// TODO: Implement button
 		public static void OnButton_Commit(UVCBrowser browser)
 		{
-			browser.OnProcessStart();
+			browser.DisableGUI();
 			UVCCommitPopup.Init(browser);
 		}
 		
@@ -313,7 +313,7 @@ namespace ThinksquirrelSoftware.UnityVersionControl.UserInterface
 		/// </summary>
 		public static void OnButton_CheckoutBranch(UVCBrowser browser)
 		{
-			browser.OnProcessStart();
+			browser.DisableGUI();
 			UVCProcessPopup.Init(VersionControl.Checkout(CommandLine.EmptyHandler, mLocalBranchNames[mLocalBranchIndex], true), false, true, OnCheckoutBranch, true);
 		}
 		
@@ -328,7 +328,7 @@ namespace ThinksquirrelSoftware.UnityVersionControl.UserInterface
 						"Confirm Reset?",
 			            confirmation, "Ok", "Cancel"))
 			{
-				browser.OnProcessStart();
+				browser.DisableGUI();
 				UVCProcessPopup.Init(VersionControl.ResetLast(CommandLine.EmptyHandler, mSelectedFileCache), true, true, browser.OnProcessStop, true);
 			}
 		}
@@ -338,7 +338,7 @@ namespace ThinksquirrelSoftware.UnityVersionControl.UserInterface
 		/// </summary>
 		public static void OnButton_Add(UVCBrowser browser)
 		{
-			browser.OnProcessStart();
+			browser.DisableGUI();
 			UVCProcessPopup.Init(VersionControl.Add(CommandLine.EmptyHandler, mSelectedFileCache), true, true, browser.OnProcessStop, true);
 		}
 		
@@ -348,7 +348,7 @@ namespace ThinksquirrelSoftware.UnityVersionControl.UserInterface
 		/// TODO: <<IMPORTANT>> Implement confirmation before removing modified files from the index
 		public static void OnButton_Remove(UVCBrowser browser)
 		{
-			browser.OnProcessStart();
+			browser.DisableGUI();
 			if (VersionControl.versionControlType == VersionControlType.Git && mStagedFileSelected)
 			{
 				// Git only - Clicking the remove button for a staged file will unstage it
@@ -402,7 +402,7 @@ namespace ThinksquirrelSoftware.UnityVersionControl.UserInterface
 		/// </summary>
 		public static void OnButton_Fetch(UVCBrowser browser)
 		{
-			browser.OnProcessStart();
+			browser.DisableGUI();
 			UVCFetchPopup.Init(browser);
 		}
 		
@@ -411,7 +411,7 @@ namespace ThinksquirrelSoftware.UnityVersionControl.UserInterface
 		/// </summary>
 		public static void OnButton_Pull(UVCBrowser browser)
 		{
-			browser.OnProcessStart();
+			browser.DisableGUI();
 			UVCPullPopup.Init(browser);
 		}
 		
@@ -420,7 +420,7 @@ namespace ThinksquirrelSoftware.UnityVersionControl.UserInterface
 		/// </summary>
 		public static void OnButton_Push(UVCBrowser browser)
 		{
-			browser.OnProcessStart();
+			browser.DisableGUI();
 			UVCPushPopup.Init(browser);
 		}
 		
@@ -430,7 +430,7 @@ namespace ThinksquirrelSoftware.UnityVersionControl.UserInterface
 		/// TODO: Implement button
 		public static void OnButton_Branch(UVCBrowser browser)
 		{
-			browser.OnProcessStart();
+			browser.DisableGUI();
 			UVCBranchPopup.Init(browser);		
 		}
 		
@@ -456,6 +456,8 @@ namespace ThinksquirrelSoftware.UnityVersionControl.UserInterface
 		/// TODO: Implement button
 		public static void OnButton_Settings(UVCBrowser browser)
 		{
+			browser.DisableGUI();
+			UVCSettingsPopup.Init(browser);
 		}
 		
 		/// <summary>

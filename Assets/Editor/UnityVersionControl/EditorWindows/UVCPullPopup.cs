@@ -150,7 +150,7 @@ public class UVCPullPopup : EditorWindow
 	{
 		if (browser)
 		{
-			browser.OnClosePopup();
+			browser.EnableGUI();
 		}
 	}
 }
