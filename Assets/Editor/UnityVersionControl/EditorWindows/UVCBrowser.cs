@@ -80,9 +80,6 @@ public class UVCBrowser : EditorWindow
 	// The last selected file index
 	private int lastSelectedIndex;
 	
-	// The last diff string
-	private string lastDiffString;
-	
 	[MenuItem ("Version Control/Browser")]
 	static void Init()
 	{
