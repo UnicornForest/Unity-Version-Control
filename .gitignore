@@ -1,7 +1,20 @@
+# Unity Project Files #
+#######################
 Library/
 Temp/
+*.userprefs
+
+# IDE Solution Files #
+######################
 *.pidb
 *.sln
-*.userprefs
 *.csproj
 *.unityproj
+
+# OS generated files #
+######################
+.DS_Store?
+ehthumbs.db
+Icon?
+Thumbs.db
+._*
