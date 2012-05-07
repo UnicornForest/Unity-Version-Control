@@ -952,8 +952,6 @@ namespace ThinksquirrelSoftware.UnityVersionControl.UserInterface
 		
 		private static void UpdateDiffPanel()
 		{
-			mDiffString = string.Empty;
-			
 			var fileList = new List<VCFile>();
 			
 			foreach(var file in mWorkingTree.Values)
