@@ -49,6 +49,7 @@ public static class UVCPreferences
 	[PreferenceItem("Version Control")]
 	public static void PreferencesGUI()
 	{
+		GUILayout.Space(10);
 		LoadPreferences();
 		index = EditorGUILayout.Popup("Default Text Editor", index, defaultTextEditor);
 		
